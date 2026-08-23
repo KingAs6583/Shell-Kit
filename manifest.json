@@ -1,0 +1,54 @@
+﻿{
+  "version": 1,
+  "repo": "shell-kit",
+  "description": "Personal shell toolkit — configs, scripts, and dotfiles",
+  "files": [
+    {
+      "src": "bash/.bashrc",
+      "targets": { "windows": "~/.bashrc", "linux": "~/.bashrc", "mac": "~/.bashrc" },
+      "executable": false
+    },
+    {
+      "src": "bash/.bash_profile",
+      "targets": { "windows": "~/.bash_profile", "linux": "~/.bash_profile", "mac": "~/.bash_profile" },
+      "executable": false
+    },
+    {
+      "src": "bash/.bash_function",
+      "targets": { "windows": "~/.bash_function", "linux": "~/.bash_function", "mac": "~/.bash_function" },
+      "executable": false
+    },
+    {
+      "src": "bash/.profile",
+      "targets": { "windows": "~/.profile", "linux": "~/.profile", "mac": "~/.profile" },
+      "executable": false
+    },
+    {
+      "src": "scripts/history-clean.sh",
+      "targets": {
+        "windows": "~/.local/bin/history-clean.sh",
+        "linux":   "~/.local/bin/history-clean.sh",
+        "mac":     "~/.local/bin/history-clean.sh"
+      },
+      "executable": true
+    },
+    {
+      "src": "scripts/setup-codebase-memory.sh",
+      "targets": {
+        "windows": "~/.local/bin/setup-codebase-memory.sh",
+        "linux":   "~/.local/bin/setup-codebase-memory.sh",
+        "mac":     "~/.local/bin/setup-codebase-memory.sh"
+      },
+      "executable": true
+    },
+    {
+      "src": "scripts/scan-packages.sh",
+      "targets": {
+        "windows": "~/.local/bin/scan-packages.sh",
+        "linux":   "~/.local/bin/scan-packages.sh",
+        "mac":     "~/.local/bin/scan-packages.sh"
+      },
+      "executable": true
+    }
+  ]
+}

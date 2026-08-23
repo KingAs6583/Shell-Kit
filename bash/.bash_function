@@ -1,0 +1,417 @@
+# ~/.bash_function — Shell functions for Git Bash / Linux Bash
+# Sourced by ~/.bashrc on interactive login.
+# Keep this file cross-platform: use $PLATFORM to branch on OS differences.
+
+# ─────────────────────────────────────────────────────────────
+# PLATFORM DETECTION
+# ─────────────────────────────────────────────────────────────
+
+detect_platform() {
+    case "$(uname -s)" in
+        MINGW*|CYGWIN*|MSYS*) echo "windows" ;;
+        Linux*)               echo "linux"   ;;
+        Darwin*)              echo "mac"     ;;
+        *)                    echo "unknown" ;;
+    esac
+}
+export PLATFORM
+PLATFORM=$(detect_platform)
+
+# ─────────────────────────────────────────────────────────────
+# HISTORY CHEAT SHEET
+# ─────────────────────────────────────────────────────────────
+
+__history_help() {
+    local C='\033[0;36m'   # cyan
+    local Y='\033[1;33m'   # yellow
+    local G='\033[0;32m'   # green
+    local B='\033[1m'      # bold
+    local R='\033[0m'      # reset
+    printf "\n"
+    printf "${C}╔══════════════════════════════════════════════════════════════╗${R}\n"
+    printf "${C}║${R}  ${B}📜 HISTORY QUICK REFERENCE${R}                                   ${C}║${R}\n"
+    printf "${C}╠══════════════════════════════════════════════════════════════╣${R}\n"
+    printf "${C}║${R}  ${Y}VIEWING${R}                                                      ${C}║${R}\n"
+    printf "${C}║${R}    ${G}h${R}              Show last 30 commands (numbered)             ${C}║${R}\n"
+    printf "${C}║${R}    ${G}hl${R}             Show last 50 commands                        ${C}║${R}\n"
+    printf "${C}║${R}    ${G}history | grep X${R}  Search history for X                     ${C}║${R}\n"
+    printf "${C}╠══════════════════════════════════════════════════════════════╣${R}\n"
+    printf "${C}║${R}  ${Y}SEARCHING${R}                                                    ${C}║${R}\n"
+    printf "${C}║${R}    ${G}Ctrl+R${R}         Reverse search — type to fuzzy match         ${C}║${R}\n"
+    printf "${C}║${R}    ${G}Ctrl+R${R} again   Cycle to older matches                       ${C}║${R}\n"
+    printf "${C}║${R}    ${G}Ctrl+G${R}         Cancel search                                ${C}║${R}\n"
+    printf "${C}║${R}    ${G}Enter${R}          Run selected match                           ${C}║${R}\n"
+    printf "${C}╠══════════════════════════════════════════════════════════════╣${R}\n"
+    printf "${C}║${R}  ${Y}RE-RUNNING${R}                                                   ${C}║${R}\n"
+    printf "${C}║${R}    ${G}!!${R}             Repeat last command                          ${C}║${R}\n"
+    printf "${C}║${R}    ${G}!42${R}            Run command #42 (use ${G}h${R} to see numbers)      ${C}║${R}\n"
+    printf "${C}║${R}    ${G}!git${R}           Most recent command starting with git         ${C}║${R}\n"
+    printf "${C}║${R}    ${G}!git:p${R}         Preview !git without running it               ${C}║${R}\n"
+    printf "${C}║${R}    ${G}!$${R}             Last argument of the previous command         ${C}║${R}\n"
+    printf "${C}║${R}    ${G}!*${R}             All arguments of the previous command         ${C}║${R}\n"
+    printf "${C}╠══════════════════════════════════════════════════════════════╣${R}\n"
+    printf "${C}║${R}  ${Y}EDITING${R}                                                      ${C}║${R}\n"
+    printf "${C}║${R}    ${G}^old^new${R}       Re-run last cmd replacing old with new        ${C}║${R}\n"
+    printf "${C}║${R}    ${G}sudo !!${R}        Re-run last command with sudo                 ${C}║${R}\n"
+    printf "${C}╠══════════════════════════════════════════════════════════════╣${R}\n"
+    printf "${C}║${R}  ${Y}CLEANING${R}                                                     ${C}║${R}\n"
+    printf "${C}║${R}    ${G}hclean${R}         Deduplicate history file (with backup)        ${C}║${R}\n"
+    printf "${C}╚══════════════════════════════════════════════════════════════╝${R}\n"
+    printf "\n"
+}
+
+# ─────────────────────────────────────────────────────────────
+# AI PROMPT LIBRARY
+# ─────────────────────────────────────────────────────────────
+
+prompts() {
+    local C='\033[0;36m'
+    local Y='\033[1;33m'
+    local G='\033[0;32m'
+    local M='\033[0;35m'
+    local B='\033[1m'
+    local R='\033[0m'
+
+    local category="${1:-}"
+
+    case "$category" in
+        mcp)
+            printf "\n${C}┌─── 🧠 MCP: Codebase Memory ─────────────────────────────────────────┐${R}\n"
+            printf "${C}│${R}\n"
+            printf "${C}│${R}  Please use codebase-memory-mcp to help with this task.\n"
+            printf "${C}│${R}\n"
+            printf "${C}│${R}  First, run ${G}detect_changes${R} to find what has changed since last index.\n"
+            printf "${C}│${R}  If changes found, run ${G}index_repository${R} on only the changed files.\n"
+            printf "${C}│${R}  Then use ${G}search_graph${R} or ${G}query_graph${R} to answer my question.\n"
+            printf "${C}│${R}\n"
+            printf "${C}│${R}  My question: [YOUR QUESTION HERE]\n"
+            printf "${C}│${R}\n"
+            printf "${C}│${R}  Rules:\n"
+            printf "${C}│${R}  - Prefer graph tools over grep/glob for code discovery\n"
+            printf "${C}│${R}  - Return code snippets only, no long explanations\n"
+            printf "${C}│${R}  - If unsure, use get_architecture for overview first\n"
+            printf "${C}└──────────────────────────────────────────────────────────────────────┘${R}\n\n"
+            ;;
+        review)
+            printf "\n${Y}┌─── 🔍 Code Review ───────────────────────────────────────────────────┐${R}\n"
+            printf "${Y}│${R}\n"
+            printf "${Y}│${R}  Please review this code change. Be concise.\n"
+            printf "${Y}│${R}\n"
+            printf "${Y}│${R}  Context: [1-2 sentences on what this does]\n"
+            printf "${Y}│${R}\n"
+            printf "${Y}│${R}  Focus on:\n"
+            printf "${Y}│${R}  1. Bugs or edge cases I may have missed\n"
+            printf "${Y}│${R}  2. Performance issues\n"
+            printf "${Y}│${R}  3. Security concerns\n"
+            printf "${Y}│${R}  4. Naming/readability\n"
+            printf "${Y}│${R}\n"
+            printf "${Y}│${R}  Format: bullet points only, no preamble.\n"
+            printf "${Y}└──────────────────────────────────────────────────────────────────────┘${R}\n\n"
+            ;;
+        debug)
+            printf "\n${M}┌─── 🐛 Debug Report ──────────────────────────────────────────────────┐${R}\n"
+            printf "${M}│${R}\n"
+            printf "${M}│${R}  Bug: [One line description]\n"
+            printf "${M}│${R}\n"
+            printf "${M}│${R}  Steps to reproduce:\n"
+            printf "${M}│${R}  1. [step]\n"
+            printf "${M}│${R}  2. [step]\n"
+            printf "${M}│${R}\n"
+            printf "${M}│${R}  Expected: [what should happen]\n"
+            printf "${M}│${R}  Actual:   [what actually happens]\n"
+            printf "${M}│${R}\n"
+            printf "${M}│${R}  Error/output:\n"
+            printf "${M}│${R}  \`\`\`\n"
+            printf "${M}│${R}  [paste error here]\n"
+            printf "${M}│${R}  \`\`\`\n"
+            printf "${M}│${R}\n"
+            printf "${M}│${R}  Relevant files: [list files involved]\n"
+            printf "${M}│${R}  Platform: $PLATFORM\n"
+            printf "${M}└──────────────────────────────────────────────────────────────────────┘${R}\n\n"
+            ;;
+        tokens)
+            printf "\n${G}┌─── ⚡ Token-Saving Patterns ─────────────────────────────────────────┐${R}\n"
+            printf "${G}│${R}\n"
+            printf "${G}│${R}  [Use at the START of your prompt to save tokens]\n"
+            printf "${G}│${R}\n"
+            printf "${G}│${R}  \"Be concise. Code only, no explanations unless asked.\"\n"
+            printf "${G}│${R}  \"Return only the changed lines as a diff block.\"\n"
+            printf "${G}│${R}  \"No preamble. No summary. Just the code.\"\n"
+            printf "${G}│${R}  \"Skip what you would normally say first. Go straight to the fix.\"\n"
+            printf "${G}│${R}  \"Output format: filename + line number + code snippet only.\"\n"
+            printf "${G}│${R}\n"
+            printf "${G}│${R}  [Context block template - paste before your question]\n"
+            printf "${G}│${R}  File: [filename]\n"
+            printf "${G}│${R}  Stack: [tech stack e.g. Next.js 15, TypeScript, Prisma]\n"
+            printf "${G}│${R}  Task: [one line]\n"
+            printf "${G}│${R}  Constraint: [any limits e.g. no new deps, keep API compat]\n"
+            printf "${G}└──────────────────────────────────────────────────────────────────────┘${R}\n\n"
+            ;;
+        *)
+            printf "\n${B}📋 AI Prompt Library${R} — Usage: ${G}prompts <category>${R}\n\n"
+            printf "  ${G}prompts mcp${R}      Codebase Memory MCP — index, search, reindex\n"
+            printf "  ${G}prompts review${R}   Code review template (concise, structured)\n"
+            printf "  ${G}prompts debug${R}    Bug report template\n"
+            printf "  ${G}prompts tokens${R}   Token-saving patterns for AI prompts\n"
+            printf "\n"
+            ;;
+    esac
+}
+
+# ─────────────────────────────────────────────────────────────
+# PYTHON VENV FINDER
+# ─────────────────────────────────────────────────────────────
+
+__find_python_venvs() {
+    local C='\033[0;36m'
+    local G='\033[0;32m'
+    local Y='\033[1;33m'
+    local B='\033[1m'
+    local R='\033[0m'
+
+    local found=()
+    local paths=()
+
+    # Locations to scan
+    local scan_dirs=(
+        "."
+        ".."
+        "$HOME"
+        "$HOME/venvs"
+        "$HOME/.venvs"
+        "$HOME/Projects"
+        "$HOME/projects"
+        "/d/Projects"
+    )
+
+    local venv_names=(".venv" "venv" "env" ".env" "virtualenv")
+
+    for base in "${scan_dirs[@]}"; do
+        [ -d "$base" ] || continue
+        for name in "${venv_names[@]}"; do
+            local path="$base/$name"
+            if [ -f "$path/pyvenv.cfg" ]; then
+                local py_ver=""
+                # Get Python version from pyvenv.cfg
+                if [ -f "$path/pyvenv.cfg" ]; then
+                    py_ver=$(grep "^version" "$path/pyvenv.cfg" 2>/dev/null | cut -d'=' -f2 | tr -d ' ')
+                fi
+                local abs_path
+                abs_path=$(cd "$path" 2>/dev/null && pwd)
+                # Avoid duplicates
+                local dup=false
+                for p in "${paths[@]:-}"; do [ "$p" = "$abs_path" ] && dup=true && break; done
+                $dup && continue
+                found+=("${abs_path} (Python ${py_ver:-?})")
+                paths+=("$abs_path")
+            fi
+        done
+    done
+
+    printf "\n${C}🐍 Python Virtual Environments${R}\n"
+    printf "${C}──────────────────────────────────────────────────────${R}\n"
+
+    if [ ${#found[@]} -eq 0 ]; then
+        printf "  ${Y}No virtual environments found in common locations.${R}\n"
+        printf "  Create one: ${G}python -m venv .venv${R}\n"
+    else
+        local i=1
+        for env in "${found[@]}"; do
+            printf "  ${B}[${i}]${R} ${G}${env}${R}\n"
+            ((i++))
+        done
+        printf "\n"
+        printf "  ${Y}To activate (Linux/Mac):${R}\n"
+        printf "  ${G}source ${paths[0]}/bin/activate${R}\n"
+        if [ "$PLATFORM" = "windows" ]; then
+            printf "\n  ${Y}To activate (Windows Git Bash):${R}\n"
+            printf "  ${G}source ${paths[0]}/Scripts/activate${R}\n"
+        fi
+    fi
+    printf "\n"
+}
+
+# ─────────────────────────────────────────────────────────────
+# TREE VIEW (Pure bash, no extra installs needed)
+# ─────────────────────────────────────────────────────────────
+
+_tree() {
+    local depth="${1:-2}"
+    local dirs_only="${2:-false}"
+    local target="${3:-.}"
+
+    local _BLUE='\033[0;34m'
+    local _RST='\033[0m'
+
+    local find_args=(-mindepth 1 -maxdepth "$depth")
+
+    # Prune noisy dirs
+    find_args+=(\(
+        -name "node_modules" -o -name ".git" -o -name "__pycache__"
+        -o -name ".next" -o -name ".venv" -o -name "venv"
+        -o -name ".cache" -o -name "dist" -o -name ".turbo"
+    \) -prune -o)
+
+    if [ "$dirs_only" = "true" ]; then
+        find_args+=(-type d -print)
+    else
+        find_args+=(-print)
+    fi
+
+    printf "${_BLUE}${target}${_RST}\n"
+
+    find "$target" "${find_args[@]}" 2>/dev/null | sort | while IFS= read -r path; do
+        local rel="${path#${target}/}"
+        local depth_count
+        depth_count=$(echo "$rel" | tr -cd '/' | wc -c)
+        local indent=""
+        for ((i=0; i<depth_count; i++)); do indent="│   ${indent}"; done
+
+        local name
+        name=$(basename "$path")
+        if [ -d "$path" ]; then
+            printf "${_BLUE}${indent}├── 📁 ${name}/${_RST}\n"
+        else
+            printf "${indent}├── ${name}\n"
+        fi
+    done
+}
+
+alias t='_tree 2'
+alias t3='_tree 3'
+alias td='_tree 2 true'
+
+# ─────────────────────────────────────────────────────────────
+# DIRECTORY SIZE CHECKER
+# ─────────────────────────────────────────────────────────────
+
+dirsize() {
+    local target="${1:-.}"
+    local _CYAN='\033[0;36m'
+    local _BOLD='\033[1m'
+    local _RST='\033[0m'
+    printf "${_CYAN}📊 Directory sizes in: ${target}${_RST}\n"
+    printf "%-50s %10s\n" "──────────────────────────────────────────────────" "──────────"
+    du -h --max-depth=1 "$target" 2>/dev/null | sort -h | while IFS=$'\t' read -r size dir; do
+        [ "$dir" = "$target" ] && continue
+        printf "%-50s %10s\n" "$(basename "$dir")/" "$size"
+    done
+    printf "──────────────────────────────────────────────────────────────\n"
+    printf "${_BOLD}%-50s %10s${_RST}\n" "TOTAL" "$(du -sh "$target" 2>/dev/null | cut -f1)"
+}
+
+dirsize5() {
+    local target="${1:-.}"
+    local count="${2:-5}"
+    local _CYAN='\033[0;36m'
+    local _RST='\033[0m'
+    printf "${_CYAN}📊 Top ${count} largest in: ${target}${_RST}\n"
+    du -h --max-depth=1 "$target" 2>/dev/null | sort -rh | \
+        tail -n +2 | head -n "$count" | \
+        while IFS=$'\t' read -r size dir; do
+            printf "  %10s  %s/\n" "$size" "$(basename "$dir")"
+        done
+}
+
+filesize() {
+    local target="${1:-.}"
+    local _CYAN='\033[0;36m'
+    local _RST='\033[0m'
+    printf "${_CYAN}📄 File sizes in: ${target}${_RST}\n"
+    find "$target" -maxdepth 1 -type f -exec du -h {} + 2>/dev/null | sort -h | \
+        while IFS=$'\t' read -r size file; do
+            printf "  %10s  %s\n" "$size" "$(basename "$file")"
+        done
+}
+
+# ─────────────────────────────────────────────────────────────
+# COLORED DIFF
+# ─────────────────────────────────────────────────────────────
+
+fdiff() {
+    if [ $# -ne 2 ]; then echo "Usage: fdiff <file1> <file2>"; return 1; fi
+    git diff --no-index --color "$1" "$2"
+}
+
+ddiff() {
+    if [ $# -ne 2 ]; then echo "Usage: ddiff <dir1> <dir2>"; return 1; fi
+    git diff --no-index --color --stat "$1" "$2"
+    echo ""
+    git diff --no-index --color "$1" "$2"
+}
+
+# ─────────────────────────────────────────────────────────────
+# GREP SHORTCUTS
+# ─────────────────────────────────────────────────────────────
+
+gr()  { grep -rn  --color=auto "$@" .; }
+gi()  { grep -rni --color=auto "$@" .; }
+gx()  {
+    grep -rn --color=auto \
+        --exclude-dir=node_modules --exclude-dir=.git \
+        --exclude-dir=__pycache__  --exclude-dir=.next \
+        --exclude-dir=.venv        --exclude-dir=venv  \
+        --exclude-dir=dist         --exclude-dir=.cache \
+        "$@" .
+}
+gf()  {
+    [ -z "$1" ] && { echo "Usage: gf '<pattern>'  e.g. gf '*.tsx'"; return 1; }
+    find . -type f -name "$1" \
+        -not -path "*/node_modules/*" -not -path "*/.git/*" \
+        -not -path "*/__pycache__/*"  -not -path "*/.next/*" \
+        2>/dev/null
+}
+todo() {
+    local _Y='\033[1;33m'; local _R='\033[0m'
+    printf "${_Y}📝 TODOs, FIXMEs, HACKs:${_R}\n"
+    grep -rn --color=auto \
+        --exclude-dir=node_modules --exclude-dir=.git \
+        --exclude-dir=__pycache__  --exclude-dir=.next \
+        --exclude-dir=dist \
+        -E "(TODO|FIXME|HACK|XXX|BUG):" . 2>/dev/null
+}
+
+# ─────────────────────────────────────────────────────────────
+# SAFE rm WRAPPER
+# ─────────────────────────────────────────────────────────────
+
+rm() {
+    local args="$*"
+    local _RED='\033[0;31m'; local _RST='\033[0m'
+    # Block if recursive/force flags present with dangerous targets
+    if [[ "$args" =~ (-[[:alnum:]]*r[[:alnum:]]*f|--recursive|--force) ]]; then
+        for arg in "$@"; do
+            case "$arg" in
+                /|.|..|~|'/*'|'~/*'|'*'|'./*'|'../*')
+                    printf "${_RED}╔══════════════════════════════════════════════╗${_RST}\n"
+                    printf "${_RED}║  ⛔  BLOCKED: Dangerous rm detected!         ║${_RST}\n"
+                    printf "${_RED}║  Target: %-35s ║${_RST}\n" "$arg"
+                    printf "${_RED}║  Specify an explicit folder name instead.   ║${_RST}\n"
+                    printf "${_RED}╚══════════════════════════════════════════════╝${_RST}\n"
+                    return 1
+                    ;;
+            esac
+        done
+    fi
+    command rm "$@"
+}
+
+# ─────────────────────────────────────────────────────────────
+# NAVIGATION
+# ─────────────────────────────────────────────────────────────
+
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+# ─────────────────────────────────────────────────────────────
+# DOTFILES MANAGEMENT
+# ─────────────────────────────────────────────────────────────
+
+dotfiles() {
+    local REPO
+    if [ "$PLATFORM" = "windows" ]; then
+        REPO="/d/Projects/shell-kit"
+    else
+        REPO="$HOME/shell-kit"
+    fi
+    bash "$REPO/dotfiles.sh" "$@"
+}
