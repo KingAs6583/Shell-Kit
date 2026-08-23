@@ -217,5 +217,15 @@ alias pyvenvs='__find_python_venvs'
 # 15. SOURCE EXTERNAL FILES
 # ─────────────────────────────────────────────────────────────
 
+# Load cross-platform functions (works on all OS)
+[ -f ~/.bash_function.both    ] && source ~/.bash_function.both
+
+# Load platform-specific functions
+[ "$PLATFORM" = "linux"   ] && [ -f ~/.bash_function.linux   ] && source ~/.bash_function.linux
+[ "$PLATFORM" = "windows" ] && [ -f ~/.bash_function.windows ] && source ~/.bash_function.windows
+
+# Legacy monolithic file (kept for backwards compat, deprecated)
 [ -f ~/.bash_function ] && source ~/.bash_function
+
+# User aliases
 [ -f ~/.bash_aliases  ] && source ~/.bash_aliases

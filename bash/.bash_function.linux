@@ -1,0 +1,162 @@
+# ~/.bash_function.linux — Linux-only shell functions
+# Works on: Linux ONLY
+# Sourced by ~/.bashrc only when PLATFORM=linux
+# [linux] tag means this function requires apt/systemd/dmidecode etc.
+
+# ─────────────────────────────────────────────────────────────
+# LINUX PLATFORM GUARD
+# ─────────────────────────────────────────────────────────────
+if [ "${PLATFORM:-}" != "linux" ]; then
+    return 0 2>/dev/null || exit 0
+fi
+
+# ─────────────────────────────────────────────────────────────
+# LINE / SEPARATOR HELPER  [linux]
+# ─────────────────────────────────────────────────────────────
+_line() {
+    local col
+    col=$(tput cols 2>/dev/null || echo 80)
+    if [ "$col" -gt 80 ]; then
+        printf '%0.s─' {1..100}
+    else
+        printf '%0.s─' {1..70}
+    fi
+    echo ""
+}
+
+# ─────────────────────────────────────────────────────────────
+# SYSTEM UPDATE  [linux]
+# Full apt update + upgrade + autoremove + autoclean cycle
+# Usage: sysupdate
+# ─────────────────────────────────────────────────────────────
+sysupdate() {
+    local _CYAN='\033[0;36m'
+    local _GREEN='\033[0;32m'
+    local _BOLD='\033[1m'
+    local _RST='\033[0m'
+
+    _line
+    printf "${_CYAN}${_BOLD}  Starting full system update...${_RST}\n"
+    _line
+
+    echo ""
+    printf "${_CYAN}  [1/4] apt update${_RST}\n"
+    sudo apt update
+
+    echo ""
+    printf "${_CYAN}  [2/4] apt upgrade${_RST}\n"
+    sudo apt upgrade -y
+
+    echo ""
+    printf "${_CYAN}  [3/4] apt autoremove${_RST}\n"
+    sudo apt autoremove -y
+
+    echo ""
+    printf "${_CYAN}  [4/4] apt autoclean${_RST}\n"
+    sudo apt autoclean
+
+    _line
+    printf "${_GREEN}${_BOLD}  System update complete!${_RST}\n"
+    _line
+}
+
+# ─────────────────────────────────────────────────────────────
+# APT CLEANUP ONLY  [linux]
+# Usage: aptclean
+# ─────────────────────────────────────────────────────────────
+aptclean() {
+    local _CYAN='\033[0;36m'
+    local _GREEN='\033[0;32m'
+    local _RST='\033[0m'
+
+    printf "${_CYAN}  Cleaning up unused packages...${_RST}\n"
+    sudo apt autoremove -y
+    sudo apt autoclean
+    printf "${_GREEN}  Clean complete.${_RST}\n"
+}
+
+# ─────────────────────────────────────────────────────────────
+# SYSTEM INFO  [linux]
+# Usage: sysinfo [type]  (default: 1 = system info)
+# dmidecode types: 1=system 4=cpu 17=ram 2=baseboard 3=chassis
+# ─────────────────────────────────────────────────────────────
+sysinfo() {
+    local type="${1:-1}"
+    local _CYAN='\033[0;36m'
+    local _BOLD='\033[1m'
+    local _RST='\033[0m'
+
+    if ! command -v dmidecode &>/dev/null; then
+        echo "  dmidecode not installed. Install with: sudo apt install dmidecode"
+        return 1
+    fi
+
+    printf "\n${_CYAN}${_BOLD}  System Info (dmidecode type ${type})${_RST}\n"
+    _line
+    sudo dmidecode --type "$type"
+
+    echo ""
+    echo "  Other useful types: 4=cpu  17=ram  2=baseboard  3=chassis"
+}
+
+# ─────────────────────────────────────────────────────────────
+# RAM INFO  [linux]
+# Usage: raminfo
+# ─────────────────────────────────────────────────────────────
+raminfo() {
+    local _CYAN='\033[0;36m'
+    local _BOLD='\033[1m'
+    local _RST='\033[0m'
+
+    printf "\n${_CYAN}${_BOLD}  RAM Information${_RST}\n"
+    _line
+
+    # Free memory summary
+    printf "\n${_CYAN}  Memory Usage:${_RST}\n"
+    free -h
+
+    # Detailed dmidecode RAM info if available
+    if command -v dmidecode &>/dev/null; then
+        printf "\n${_CYAN}  RAM Hardware Details (dmidecode type 17):${_RST}\n"
+        _line
+        sudo dmidecode --type 17 | grep -E "Size:|Type:|Speed:|Manufacturer:|Part Number:|Locator:" | grep -v "No Module"
+    fi
+
+    # /proc/meminfo summary
+    printf "\n${_CYAN}  /proc/meminfo summary:${_RST}\n"
+    grep -E "^(MemTotal|MemFree|MemAvailable|SwapTotal|SwapFree):" /proc/meminfo | \
+        awk '{printf "  %-20s %s %s\n", $1, $2, $3}'
+    echo ""
+}
+
+# ─────────────────────────────────────────────────────────────
+# FILE/DIR SCANNER  [linux]
+# Scan a directory for large files, old files, or duplicates
+# Usage: scandisk [path]
+# ─────────────────────────────────────────────────────────────
+scandisk() {
+    local target="${1:-$HOME}"
+    local _CYAN='\033[0;36m'
+    local _YELLOW='\033[1;33m'
+    local _BOLD='\033[1m'
+    local _RST='\033[0m'
+
+    printf "\n${_CYAN}${_BOLD}  Disk Scan: ${target}${_RST}\n"
+    _line
+
+    printf "\n${_YELLOW}  Top 10 largest files:${_RST}\n"
+    find "$target" -type f -not -path "*/\.*" \
+        -exec du -h {} + 2>/dev/null | sort -rh | head -10 | \
+        awk '{printf "  %10s  %s\n", $1, $2}'
+
+    printf "\n${_YELLOW}  Top 10 largest directories:${_RST}\n"
+    du -h --max-depth=2 "$target" 2>/dev/null | sort -rh | head -10 | \
+        awk '{printf "  %10s  %s\n", $1, $2}'
+
+    printf "\n${_YELLOW}  Files not accessed in 30+ days (top 10):${_RST}\n"
+    find "$target" -type f -atime +30 -not -path "*/\.*" \
+        2>/dev/null | head -10 | while read -r f; do
+        printf "  %s\n" "$f"
+    done
+    echo ""
+}

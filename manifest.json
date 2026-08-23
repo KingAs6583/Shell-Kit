@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 1,
   "repo": "shell-kit",
   "description": "Personal shell toolkit — configs, scripts, and dotfiles",
@@ -16,7 +16,26 @@
     {
       "src": "bash/.bash_function",
       "targets": { "windows": "~/.bash_function", "linux": "~/.bash_function", "mac": "~/.bash_function" },
-      "executable": false
+      "executable": false,
+      "note": "Deprecated: use .bash_function.both/.linux/.windows instead"
+    },
+    {
+      "src": "bash/.bash_function.both",
+      "targets": { "windows": "~/.bash_function.both", "linux": "~/.bash_function.both", "mac": "~/.bash_function.both" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "bash/.bash_function.linux",
+      "targets": { "linux": "~/.bash_function.linux" },
+      "executable": false,
+      "platform": "linux"
+    },
+    {
+      "src": "bash/.bash_function.windows",
+      "targets": { "windows": "~/.bash_function.windows" },
+      "executable": false,
+      "platform": "windows"
     },
     {
       "src": "bash/.profile",
@@ -25,30 +44,39 @@
     },
     {
       "src": "scripts/history-clean.sh",
-      "targets": {
-        "windows": "~/.local/bin/history-clean.sh",
-        "linux":   "~/.local/bin/history-clean.sh",
-        "mac":     "~/.local/bin/history-clean.sh"
-      },
-      "executable": true
+      "targets": { "windows": "~/.local/bin/history-clean.sh", "linux": "~/.local/bin/history-clean.sh", "mac": "~/.local/bin/history-clean.sh" },
+      "executable": true,
+      "platform": "both"
     },
     {
       "src": "scripts/setup-codebase-memory.sh",
-      "targets": {
-        "windows": "~/.local/bin/setup-codebase-memory.sh",
-        "linux":   "~/.local/bin/setup-codebase-memory.sh",
-        "mac":     "~/.local/bin/setup-codebase-memory.sh"
-      },
-      "executable": true
+      "targets": { "windows": "~/.local/bin/setup-codebase-memory.sh", "linux": "~/.local/bin/setup-codebase-memory.sh", "mac": "~/.local/bin/setup-codebase-memory.sh" },
+      "executable": true,
+      "platform": "both"
     },
     {
       "src": "scripts/scan-packages.sh",
-      "targets": {
-        "windows": "~/.local/bin/scan-packages.sh",
-        "linux":   "~/.local/bin/scan-packages.sh",
-        "mac":     "~/.local/bin/scan-packages.sh"
-      },
-      "executable": true
+      "targets": { "windows": "~/.local/bin/scan-packages.sh", "linux": "~/.local/bin/scan-packages.sh", "mac": "~/.local/bin/scan-packages.sh" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "scripts/linux/update.sh",
+      "targets": { "linux": "~/.local/bin/update-sys.sh" },
+      "executable": true,
+      "platform": "linux"
+    },
+    {
+      "src": "scripts/linux/system-info.sh",
+      "targets": { "linux": "~/.local/bin/system-info.sh" },
+      "executable": true,
+      "platform": "linux"
+    },
+    {
+      "src": "scripts/linux/ram-info.sh",
+      "targets": { "linux": "~/.local/bin/ram-info.sh" },
+      "executable": true,
+      "platform": "linux"
     }
   ]
 }
