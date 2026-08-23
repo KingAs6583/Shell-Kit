@@ -8,3 +8,5 @@ __pycache__/
 *.swp
 .idea/
 .vscode/
+backup_config.json
+*.csv

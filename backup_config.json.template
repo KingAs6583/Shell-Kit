@@ -1,0 +1,19 @@
+{
+  "projects_dirs": [
+    "D:/Projects",
+    "~/Projects"
+  ],
+  "backup_dest": "D:/Backups",
+  "assets": [
+    {
+      "name": "documents",
+      "source": "D:/Documents",
+      "exclude": ["*.tmp", "node_modules", ".git", ".cache"]
+    },
+    {
+      "name": "obsidian_vault",
+      "source": "D:/Vault",
+      "exclude": ["*.tmp"]
+    }
+  ]
+}

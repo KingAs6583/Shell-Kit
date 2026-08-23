@@ -232,3 +232,37 @@ setupGithubSshKey() {
     printf "    git config user.email \"%s\"\n" "$email"
     printf "    git remote set-url origin git@%s:USERNAME/REPO.git\n\n" "$key_name"
 }
+
+# ─────────────────────────────────────────────────────────────
+# BACKUP & CONFIG MANAGEMENT  [both]
+# ─────────────────────────────────────────────────────────────
+
+# Helper to run python script using python3 or python
+_run_py_script() {
+    local script="$1"
+    shift
+    if command -v python3 &>/dev/null; then
+        python3 "$script" "$@"
+    elif command -v python &>/dev/null; then
+        python "$script" "$@"
+    else
+        echo "Error: Python is not installed or not in PATH." >&2
+        return 1
+    fi
+}
+
+bkscan() {
+    _run_py_script "$HOME/.local/bin/git_scanner.py" "$@"
+}
+
+bkrun() {
+    _run_py_script "$HOME/.local/bin/backup.py" "$@"
+}
+
+bkrestore() {
+    _run_py_script "$HOME/.local/bin/asset_backup.py" --restore "$@"
+}
+
+cfginspect() {
+    _run_py_script "$HOME/.local/bin/config_inspector.py" "$@"
+}
