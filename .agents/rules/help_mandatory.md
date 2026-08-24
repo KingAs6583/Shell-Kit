@@ -33,3 +33,8 @@ This rule mandates that all scripts, utility commands, and shell functions in th
      }
      ```
    - Lazy stubs must forward all arguments using `"$@"` so that `--help` and `-h` commands function correctly.
+
+4. **Self-Cleanup Option**:
+   - Any script that creates local untracked files (such as caches, temporary logs, or backup files) must support a `--cleanup` option.
+   - When executed with `--cleanup`, the script must cleanly remove all of its own generated files from the system without deleting the script itself.
+   - The centralized `uninstall.sh` script will run the `--cleanup` option on these scripts before deleting them.

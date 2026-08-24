@@ -5,6 +5,19 @@
 set -uo pipefail
 
 FOREGROUND=false
+
+# Handle --cleanup flag
+if [[ "${1:-}" == "--cleanup" ]]; then
+    CACHE_FILE="${HOME}/.cache/installed-packages.txt"
+    if [ -f "$CACHE_FILE" ]; then
+        rm -f "$CACHE_FILE"
+        echo "Deleted package list cache: $CACHE_FILE"
+    else
+        echo "No package list cache found."
+    fi
+    exit 0
+fi
+
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     echo "Usage: scan-packages.sh [OPTIONS]"
     echo ""
@@ -12,6 +25,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     echo ""
     echo "Options:"
     echo "  --foreground  Run in foreground and print the package cache"
+    echo "  --cleanup     Delete the package list cache file"
     echo "  -h, --help    Show this help message and exit"
     exit 0
 fi

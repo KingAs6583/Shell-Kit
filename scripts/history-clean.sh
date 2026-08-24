@@ -14,6 +14,18 @@
 
 set -euo pipefail
 
+# Handle --cleanup flag
+if [[ "${1:-}" == "--cleanup" ]]; then
+    BACKUP="${HOME}/.bash_history.bak"
+    if [ -f "$BACKUP" ]; then
+        rm -f "$BACKUP"
+        echo "Deleted history backup: $BACKUP"
+    else
+        echo "No history backup found."
+    fi
+    exit 0
+fi
+
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     echo "Usage: history-clean.sh [OPTIONS]"
     echo ""
@@ -21,6 +33,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     echo "of each command and backing up the original file."
     echo ""
     echo "Options:"
+    echo "  --cleanup     Delete the history backup file"
     echo "  -h, --help    Show this help message and exit"
     exit 0
 fi

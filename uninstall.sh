@@ -41,6 +41,7 @@ with open(manifest_path) as f:
     manifest = json.load(f)
 
 for entry in manifest["files"]:
+    src = entry["src"]
     targets = entry.get("targets", {})
     target = targets.get(platform) or targets.get("linux")
     if target:
@@ -52,7 +53,7 @@ for entry in manifest["files"]:
             ".bash_function.linux", ".bash_function.windows"
         ]
         if not is_config:
-            print(target)
+            print(f"{target}|{src}")
 PYEOF
 )
     mapfile -t DELETE_FILES <<< "$DELETE_LINES_RAW"
@@ -63,13 +64,24 @@ fi
 
 # Perform Deletion
 DELETED_COUNT=0
-for target in "${DELETE_FILES[@]:-}"; do
-    if [ -z "$target" ]; then continue; fi
+for line in "${DELETE_FILES[@]:-}"; do
+    if [ -z "$line" ]; then continue; fi
+
+    # Split target and src
+    target="${line%%|*}"
+    src="${line#*|}"
 
     # Resolve home directory
     resolved_path="${target//\~/$HOME}"
+    repo_src_path="$REPO_DIR/$src"
 
     if [ -e "$resolved_path" ] || [ -L "$resolved_path" ]; then
+        # Run self-cleanup if supported by the source script in the repo
+        if [ -f "$repo_src_path" ] && grep -Fq -e "--cleanup" "$repo_src_path" 2>/dev/null; then
+            echo "  [CLEANUP] Running $target --cleanup"
+            bash "$resolved_path" --cleanup 2>/dev/null || true
+        fi
+
         rm -f "$resolved_path"
         echo "  [DELETED] $target"
         DELETED_COUNT=$((DELETED_COUNT + 1))
