@@ -4,11 +4,84 @@
 # [both] tag means function works everywhere.
 
 # ─────────────────────────────────────────────────────────────
+# CENTRAL TOOLKIT MANUAL  [both]
+# ─────────────────────────────────────────────────────────────
+
+manual() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: manual"
+        return 0
+    fi
+
+    local C='\033[0;36m'   # cyan
+    local Y='\033[1;33m'   # yellow
+    local G='\033[0;32m'   # green
+    local B='\033[1m'      # bold
+    local R='\033[0m'      # reset
+    
+    printf "\n"
+    printf "${C}======================================================================${R}\n"
+    printf "${C}                 shell-kit TOOLKIT MANUAL & HELP${R}\n"
+    printf "${C}======================================================================${R}\n"
+    printf "\n"
+    printf "${Y}1. DOTFILES MANAGEMENT${R}\n"
+    printf "  ${G}dotfiles verify${R}      Verify local configs vs git repository\n"
+    printf "  ${G}dotfiles install${R}     Symlink/copy configs to correct paths\n"
+    printf "  ${G}dotfiles sync${R}        Stage, commit, and push repository changes\n"
+    printf "  ${G}dotfiles status${R}      Show git status and commits history\n"
+    printf "\n"
+    printf "${Y}2. BACKUP & SYSTEM SYNC${R}\n"
+    printf "  ${G}bkscan${R}               Scan project directories for dirty git repos\n"
+    printf "  ${G}bkrun${R}                Orchestrated scan + assets backup run\n"
+    printf "  ${G}bkrestore${R}            Interactively restore/unzip asset archives\n"
+    printf "  ${G}cfginspect${R}           Inspect configuration directory storage bloat\n"
+    printf "\n"
+    printf "${Y}3. GIT UTILITIES${R}\n"
+    printf "  ${G}setupGit${R}             Initialize repo, stage files, and push to remote\n"
+    printf "  ${G}upload${R}               Quick git add, commit, and push\n"
+    printf "  ${G}globalConfig${R}         Set Git user name and email globally\n"
+    printf "  ${G}localConfig${R}          Set Git user name and email locally\n"
+    printf "  ${G}listSshConfig${R}        List active Host aliases in ~/.ssh/config\n"
+    printf "  ${G}setupGithubSshKey${R}    Generate SSH key and setup GitHub integration\n"
+    printf "\n"
+    printf "${Y}4. HELP & UTILS${R}\n"
+    printf "  ${G}manual${R}               Show this unified toolkit guide\n"
+    printf "  ${G}hhelp${R}                Show shell history cheat sheet\n"
+    printf "  ${G}pyvenvs${R}              Find Python virtual environments\n"
+    printf "  ${G}pkglist / pkgscan${R}    Show/update history package cache\n"
+    printf "\n"
+    printf "${Y}5. LINUX UTILITIES [linux]${R}\n"
+    printf "  ${G}sysupdate${R}            Full apt update/upgrade/clean cycle\n"
+    printf "  ${G}aptclean${R}             Apt cleanup of unused packages\n"
+    printf "  ${G}sysinfo${R}              Hardware system info via dmidecode\n"
+    printf "  ${G}raminfo${R}              Hardware & usage RAM details\n"
+    printf "  ${G}scandisk${R}             Scan directory for large or old files\n"
+    printf "\n"
+    printf "${Y}6. WINDOWS UTILITIES [windows]${R}\n"
+    printf "  ${G}explore${R}              Open directory in Windows Explorer\n"
+    printf "  ${G}open${R}                 Open file or URL in default Windows app\n"
+    printf "  ${G}toUnix${R}               Convert Windows path format to Unix\n"
+    printf "  ${G}toWin${R}                Convert Unix path format to Windows\n"
+    printf "  ${G}killwin${R}              Force kill a Windows process by name\n"
+    printf "  ${G}pslist${R}               List active Windows processes with memory\n"
+    printf "  ${G}devmode${R}              Check Windows Developer Mode status\n"
+    printf "\n"
+    printf "${C}Note: Every command above accepts --help or -h for signature details.${R}\n"
+    printf "${C}======================================================================${R}\n"
+    printf "\n"
+}
+
+# ─────────────────────────────────────────────────────────────
 # GIT IDENTITY SETUP  [both]
 # ─────────────────────────────────────────────────────────────
 
 # Set git identity globally on this machine
 globalConfig() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: globalConfig"
+        return 0
+    fi
+
     echo ""
     read -r -p "  Enter User Name  : " userName
     read -r -p "  Enter Email Address : " email
@@ -24,6 +97,11 @@ globalConfig() {
 
 # Set git identity for this repo only
 localConfig() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: localConfig"
+        return 0
+    fi
+
     echo ""
     read -r -p "  Enter User Name  : " userName
     read -r -p "  Enter Email Address : " email
@@ -38,39 +116,23 @@ localConfig() {
 }
 
 # ─────────────────────────────────────────────────────────────
-# GIT REPO SETUP  [both]
+# GIT REPO SETUP  [both] (LAZY LOADED STUB)
 # ─────────────────────────────────────────────────────────────
 
 # Initialize a new repo, make first commit, push to remote
-# Usage: setupGit "initial commit message" https://github.com/user/repo
 setupGit() {
-    if [ $# -lt 2 ]; then
-        echo "Usage: setupGit \"commit message\" <repo-url>"
-        echo "Example: setupGit \"initial commit\" https://github.com/user/repo"
-        return 1
-    fi
-
-    local msg="$1"
-    local repoUrl="$2"
-
-    # Strip trailing .git if user included it
-    repoUrl="${repoUrl%.git}"
-
-    git init
-    git add .
-    git commit -m "$msg"
-    git remote add origin "${repoUrl}.git"
-    git branch -M main
-    git push -u origin main
-    git status
-    echo ""
-    echo "  Repo live at: ${repoUrl}"
-    _git_hint
+    source "$HOME/.local/share/shell-kit/lazy/setupGit.sh"
+    setupGit "$@"
 }
 
 # Quick add+commit+push to existing repo
 # Usage: upload "commit message"
 upload() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: upload \"commit message\""
+        return 0
+    fi
+
     if [ -z "${1:-}" ]; then
         echo "Usage: upload \"commit message\""
         return 1
@@ -92,11 +154,16 @@ _git_hint() {
 }
 
 # ─────────────────────────────────────────────────────────────
-# SSH KEY MANAGEMENT  [both]
+# SSH KEY MANAGEMENT  [both] (LAZY LOADED STUB & HELP)
 # ─────────────────────────────────────────────────────────────
 
 # List all SSH host aliases and their identity files from ~/.ssh/config
 listSshConfig() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: listSshConfig"
+        return 0
+    fi
+
     local config_path="$HOME/.ssh/config"
 
     if [ ! -f "$config_path" ]; then
@@ -111,7 +178,7 @@ listSshConfig() {
 
     printf "\n${_CYAN}${_BOLD}SSH Host Aliases:${_RST}\n"
     printf "%-25s %-15s %s\n" "Host Alias" "Hostname" "IdentityFile"
-    printf "%-25s %-15s %s\n" "─────────────────────────" "───────────────" "────────────────────────"
+    printf "%-25s %-15s %s\n" "-------------------------" "---------------" "------------------------"
 
     awk '
     /^Host / {
@@ -132,105 +199,9 @@ listSshConfig() {
 }
 
 # Interactive SSH key generator for GitHub
-# Usage: setupGithubSshKey
 setupGithubSshKey() {
-    local key_name email full_name relative_path use_agent
-    local ssh_dir="$HOME/.ssh"
-    local config_path="$ssh_dir/config"
-    local key_path
-
-    local _GREEN='\033[0;32m'
-    local _CYAN='\033[0;36m'
-    local _YELLOW='\033[1;33m'
-    local _RST='\033[0m'
-
-    printf "\n${_CYAN}=== GitHub SSH Key Setup ===${_RST}\n\n"
-
-    read -r -p "  Key alias (e.g. 'work' or 'personal'): " key_name
-    read -r -p "  Email address: " email
-    read -r -p "  Full name (for git config): " full_name
-    read -r -p "  Key path under ~/ (leave blank for ~/.ssh/id_ed25519_${key_name}): " relative_path
-    read -r -p "  Add key to ssh-agent now? (y/N): " use_agent
-
-    if [ -z "$key_name" ] || [ -z "$email" ] || [ -z "$full_name" ]; then
-        echo "  Error: key alias, email, and full name are required."
-        return 1
-    fi
-
-    # Build key path
-    if [ -z "$relative_path" ]; then
-        key_path="$HOME/.ssh/id_ed25519_${key_name}"
-    else
-        relative_path="${relative_path#~/}"
-        relative_path="${relative_path#/}"
-        key_path="$HOME/$relative_path"
-    fi
-
-    # Guard: don't overwrite existing key
-    if [ -f "$key_path" ] || [ -f "${key_path}.pub" ]; then
-        echo "  Key already exists at: $key_path"
-        echo "  Delete it first if you want to regenerate."
-        return 1
-    fi
-
-    # Create .ssh dir
-    mkdir -p "$ssh_dir" && chmod 700 "$ssh_dir" 2>/dev/null
-    mkdir -p "$(dirname "$key_path")"
-
-    printf "\n${_YELLOW}Generating SSH key at: $key_path${_RST}\n"
-    echo "  (You'll be prompted for a passphrase — use one for better security)"
-    echo ""
-
-    ssh-keygen -t ed25519 -C "$email" -f "$key_path" || {
-        echo "  ssh-keygen failed."
-        return 1
-    }
-
-    chmod 600 "$key_path" 2>/dev/null
-    chmod 644 "${key_path}.pub" 2>/dev/null
-
-    # Add to ~/.ssh/config
-    touch "$config_path"
-    chmod 600 "$config_path" 2>/dev/null
-
-    if ! grep -q "^Host ${key_name}$" "$config_path" 2>/dev/null; then
-        {
-            echo ""
-            echo "Host ${key_name}"
-            echo "    HostName github.com"
-            echo "    User git"
-            echo "    IdentityFile ${key_path}"
-            echo "    IdentitiesOnly yes"
-        } >> "$config_path"
-        printf "${_GREEN}  Added SSH config entry for Host: ${key_name}${_RST}\n"
-    else
-        echo "  SSH config entry already exists for Host: ${key_name}"
-    fi
-
-    # Optionally add to ssh-agent
-    if [[ "${use_agent:-}" =~ ^[Yy]$ ]]; then
-        eval "$(ssh-agent -s)" >/dev/null 2>&1
-        ssh-add "$key_path"
-        echo "  Key added to ssh-agent."
-    fi
-
-    # Print summary
-    printf "\n${_GREEN}=== Done! ===${_RST}\n"
-    printf "  Name:         %s\n" "$full_name"
-    printf "  Email:        %s\n" "$email"
-    printf "  Private key:  %s\n" "$key_path"
-    printf "  Public key:   %s.pub\n" "$key_path"
-    printf "  SSH alias:    %s\n\n" "$key_name"
-
-    printf "${_CYAN}Copy this public key to GitHub → Settings → SSH Keys:${_RST}\n"
-    printf "────────────────────────────────────────────────────\n"
-    cat "${key_path}.pub"
-    printf "────────────────────────────────────────────────────\n\n"
-
-    printf "  Set up git config for this key:\n"
-    printf "    git config user.name \"%s\"\n" "$full_name"
-    printf "    git config user.email \"%s\"\n" "$email"
-    printf "    git remote set-url origin git@%s:USERNAME/REPO.git\n\n" "$key_name"
+    source "$HOME/.local/share/shell-kit/lazy/setupGithubSshKey.sh"
+    setupGithubSshKey "$@"
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -252,17 +223,33 @@ _run_py_script() {
 }
 
 bkscan() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: bkscan [OPTIONS]"
+        return 0
+    fi
     _run_py_script "$HOME/.local/bin/git_scanner.py" "$@"
 }
 
 bkrun() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: bkrun [OPTIONS]"
+        return 0
+    fi
     _run_py_script "$HOME/.local/bin/backup.py" "$@"
 }
 
 bkrestore() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: bkrestore [OPTIONS]"
+        return 0
+    fi
     _run_py_script "$HOME/.local/bin/asset_backup.py" --restore "$@"
 }
 
 cfginspect() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: cfginspect [OPTIONS]"
+        return 0
+    fi
     _run_py_script "$HOME/.local/bin/config_inspector.py" "$@"
 }

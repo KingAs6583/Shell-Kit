@@ -128,6 +128,11 @@ shell-kit/
   - `backup.py` — orchestrator that runs both (`bkrun` command)
   - `config_inspector.py` — inspect and validate JSON configurations (`cfginspect` command)
   - Lossless zip, cross-platform (Windows/Linux/Mac), config-driven (`backup_config.json`)
+- [/] **Mandatory Help & Lazy Loading**
+  - Centralized `manual` command for help cheat sheet
+  - Minimal `--help` / `-h` check on all functions
+  - Lazy loading for heavy functions (`setupGithubSshKey`, `setupGit`, `sysinfo`, `raminfo`, `scandisk`)
+  - Automated validation script `help_enforcer.py`
 
 ---
 
@@ -155,6 +160,7 @@ fc67a57  Add .gitattributes (enforce LF)
 
 ```bash
 # Run in new Git Bash window (not VSCode terminal)
+manual         # central manual / help command
 hhelp          # history cheat sheet
 prompts mcp    # AI prompt for codebase-memory-mcp
 dotfiles verify # check sync status
@@ -164,6 +170,5 @@ setupGithubSshKey  # generate GitHub SSH key
 ```
 
 ## Next Steps
-1. Add GitHub remote: `git remote add origin git@github.com:KingAs6583/shell-kit.git`
-2. Push: `git push -u origin main`
-3. Implement backup scanner (see Planned section above)
+1. Implement centralized `manual` command, stubs, and function `--help` checks.
+2. Build and run the `help_enforcer.py` validator.

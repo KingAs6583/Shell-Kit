@@ -107,6 +107,42 @@
       "targets": { "windows": "~/.local/bin/dotfiles.sh", "linux": "~/.local/bin/dotfiles.sh", "mac": "~/.local/bin/dotfiles.sh" },
       "executable": true,
       "platform": "both"
+    },
+    {
+      "src": "PyScp/help_enforcer.py",
+      "targets": { "windows": "~/.local/bin/help_enforcer.py", "linux": "~/.local/bin/help_enforcer.py", "mac": "~/.local/bin/help_enforcer.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "bash/lazy/setupGithubSshKey.sh",
+      "targets": { "windows": "~/.local/share/shell-kit/lazy/setupGithubSshKey.sh", "linux": "~/.local/share/shell-kit/lazy/setupGithubSshKey.sh", "mac": "~/.local/share/shell-kit/lazy/setupGithubSshKey.sh" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "bash/lazy/setupGit.sh",
+      "targets": { "windows": "~/.local/share/shell-kit/lazy/setupGit.sh", "linux": "~/.local/share/shell-kit/lazy/setupGit.sh", "mac": "~/.local/share/shell-kit/lazy/setupGit.sh" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "bash/lazy/sysinfo.sh",
+      "targets": { "windows": "~/.local/share/shell-kit/lazy/sysinfo.sh", "linux": "~/.local/share/shell-kit/lazy/sysinfo.sh", "mac": "~/.local/share/shell-kit/lazy/sysinfo.sh" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "bash/lazy/raminfo.sh",
+      "targets": { "windows": "~/.local/share/shell-kit/lazy/raminfo.sh", "linux": "~/.local/share/shell-kit/lazy/raminfo.sh", "mac": "~/.local/share/shell-kit/lazy/raminfo.sh" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "bash/lazy/scandisk.sh",
+      "targets": { "windows": "~/.local/share/shell-kit/lazy/scandisk.sh", "linux": "~/.local/share/shell-kit/lazy/scandisk.sh", "mac": "~/.local/share/shell-kit/lazy/scandisk.sh" },
+      "executable": false,
+      "platform": "both"
     }
   ]
 }
