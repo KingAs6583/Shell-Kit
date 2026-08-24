@@ -47,6 +47,7 @@ manual() {
     printf "${Y}4. HELP & UTILS${R}\n"
     printf "  ${G}manual${R}               Show this unified toolkit guide\n"
     printf "  ${G}hhelp${R}                Show shell history cheat sheet\n"
+    printf "  ${G}prompts${R}              Manage and copy AI prompt templates\n"
     printf "  ${G}pyvenvs${R}              Find Python virtual environments\n"
     printf "  ${G}pkglist / pkgscan${R}    Show/update history package cache\n"
     printf "\n"
@@ -253,3 +254,12 @@ cfginspect() {
     fi
     _run_py_script "$HOME/.local/bin/config_inspector.py" "$@"
 }
+
+prompts() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: prompts [command | template]"
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/prompts.py" "$@"
+}
+

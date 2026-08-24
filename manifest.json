@@ -143,6 +143,36 @@
       "targets": { "windows": "~/.local/share/shell-kit/lazy/scandisk.sh", "linux": "~/.local/share/shell-kit/lazy/scandisk.sh", "mac": "~/.local/share/shell-kit/lazy/scandisk.sh" },
       "executable": false,
       "platform": "both"
+    },
+    {
+      "src": "PyScp/prompts.py",
+      "targets": { "windows": "~/.local/bin/prompts.py", "linux": "~/.local/bin/prompts.py", "mac": "~/.local/bin/prompts.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "prompts/debug.md",
+      "targets": { "windows": "~/.local/share/shell-kit/prompts/debug.md", "linux": "~/.local/share/shell-kit/prompts/debug.md", "mac": "~/.local/share/shell-kit/prompts/debug.md" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "prompts/mcp.md",
+      "targets": { "windows": "~/.local/share/shell-kit/prompts/mcp.md", "linux": "~/.local/share/shell-kit/prompts/mcp.md", "mac": "~/.local/share/shell-kit/prompts/mcp.md" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "prompts/review.md",
+      "targets": { "windows": "~/.local/share/shell-kit/prompts/review.md", "linux": "~/.local/share/shell-kit/prompts/review.md", "mac": "~/.local/share/shell-kit/prompts/review.md" },
+      "executable": false,
+      "platform": "both"
+    },
+    {
+      "src": "prompts/tokens.md",
+      "targets": { "windows": "~/.local/share/shell-kit/prompts/tokens.md", "linux": "~/.local/share/shell-kit/prompts/tokens.md", "mac": "~/.local/share/shell-kit/prompts/tokens.md" },
+      "executable": false,
+      "platform": "both"
     }
   ]
 }
