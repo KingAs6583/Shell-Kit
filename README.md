@@ -188,6 +188,14 @@ Two-line, cyan/teal themed:
 | `rm -rf foldername` | Works normally |
 | `mv` / `cp` | Confirm before overwrite (`-i`) |
 
+### Developer Utilities
+| Command / Utility | Action |
+|-------------------|--------|
+| `manual` | Unified help cheat sheet: displays all commands, functions, and aliases |
+| `scripts/sandbox.sh [--no-install] [cmd]` | Runs an isolated subshell (or custom command) in a temporary folder under `/tmp/`. Includes `deactivate` alias for quick exit and cleanup. |
+| `uninstall.sh` | Cleans up local bin and runs `--cleanup` on stateful scripts before deleting symlinks |
+| `PyScp/help_enforcer.py` | Validates that all functions/scripts conform to `--help` and `manual` registry rules |
+
 ---
 
 ## How Dotfiles Work

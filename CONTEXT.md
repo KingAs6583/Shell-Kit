@@ -132,11 +132,14 @@ shell-kit/
   - `backup.py` — orchestrator that runs both (`bkrun` command)
   - `config_inspector.py` — inspect and validate JSON configurations (`cfginspect` command)
   - Lossless zip, cross-platform (Windows/Linux/Mac), config-driven (`backup_config.json`)
-- [/] **Mandatory Help & Lazy Loading**
+- [x] **Mandatory Help & Lazy Loading**
   - Centralized `manual` command for help cheat sheet
   - Minimal `--help` / `-h` check on all functions
   - Lazy loading for heavy functions (`setupGithubSshKey`, `setupGit`, `sysinfo`, `raminfo`, `scandisk`)
   - Automated validation script `help_enforcer.py`
+- [x] **Self-Cleanup Option & Safe Uninstallation**
+  - Added `--cleanup` to stateful scripts (`scan-packages.sh`, `history-clean.sh`) to clean up their own caches and backups.
+  - Configured `uninstall.sh` to dynamically run `--cleanup` on scripts that support it before deleting symlinks.
 
 ---
 
@@ -174,8 +177,8 @@ setupGithubSshKey  # generate GitHub SSH key
 ```
 
 ## Developer Utilities
-- **Sandbox Testing**: Run `bash scripts/sandbox.sh` to spin up an isolated environment with a temporary mock home directory.
-- **Uninstaller**: Run `./uninstall.sh` to clean up utility and lazy scripts from the local bin.
-
-## Next Steps
-1. Verify sandbox loading behavior and perform automated/manual checks.
+- **Sandbox Testing**: Run `bash scripts/sandbox.sh [--no-install] [command]` to spin up an isolated environment with a temporary mock home directory.
+  - `--no-install`: Starts a clean sandbox with an empty home directory.
+  - `[command]`: Executes the specified command inside the sandbox and exits immediately.
+  - `deactivate` alias: Run `deactivate` inside the interactive sandbox shell to exit and trigger auto-cleanup.
+- **Uninstaller**: Run `./uninstall.sh` to clean up utility and lazy scripts from the local bin. Automatically triggers `--cleanup` on scripts that support it to remove local state (caches, backups, logs).
