@@ -402,16 +402,3 @@ rm() {
 
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
-# ─────────────────────────────────────────────────────────────
-# DOTFILES MANAGEMENT
-# ─────────────────────────────────────────────────────────────
-
-dotfiles() {
-    local REPO
-    if [ "$PLATFORM" = "windows" ]; then
-        REPO="/d/Projects/shell-kit"
-    else
-        REPO="$HOME/shell-kit"
-    fi
-    bash "$REPO/dotfiles.sh" "$@"
-}

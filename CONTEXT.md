@@ -44,24 +44,28 @@ shell-kit/
 │   ├── .bash_function.both      SSH/git functions (8kb)
 │   ├── .bash_function.linux     Linux functions (6.5kb)
 │   ├── .bash_function.windows   Windows functions (3.8kb)
-│   └── .profile                 PATH additions
+│   ├── .profile                 PATH additions
+│   └── lazy/                    Lazy-loaded function implementations
 ├── PyScp/
 │   ├── asset_backup.py          Zip non-git folders (documents, assets, vaults)
 │   ├── backup.py                Backup orchestrator
 │   ├── config_inspector.py      Inspect and validate config schemas
-│   └── git_scanner.py           Scan project dirs, report uncommitted repos
+│   ├── git_scanner.py           Scan project dirs, report uncommitted repos
+│   └── help_enforcer.py         Validator for --help rules and manual command
 ├── scripts/
 │   ├── history-clean.sh         Dedup ~/.bash_history
 │   ├── setup-codebase-memory.sh Install codebase-memory-mcp
 │   ├── scan-packages.sh         Async package history scanner
+│   ├── sandbox.sh               Isolated testing environment inside /tmp
 │   └── linux/
 │       ├── update.sh            apt full update
 │       ├── system-info.sh       dmidecode hardware info
 │       └── ram-info.sh          RAM details
 ├── .gitignore
 ├── .gitattributes               Enforce LF
-├── manifest.json                13 tracked files with platform targets
+├── manifest.json                19 tracked files with platform targets
 ├── install.sh
+├── uninstall.sh                 Uninstaller for utility scripts
 ├── verify.sh
 ├── dotfiles.sh
 └── README.md
@@ -169,6 +173,9 @@ pyvenvs        # find Python venvs
 setupGithubSshKey  # generate GitHub SSH key
 ```
 
+## Developer Utilities
+- **Sandbox Testing**: Run `bash scripts/sandbox.sh` to spin up an isolated environment with a temporary mock home directory.
+- **Uninstaller**: Run `./uninstall.sh` to clean up utility and lazy scripts from the local bin.
+
 ## Next Steps
-1. Implement centralized `manual` command, stubs, and function `--help` checks.
-2. Build and run the `help_enforcer.py` validator.
+1. Verify sandbox loading behavior and perform automated/manual checks.
