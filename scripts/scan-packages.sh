@@ -5,6 +5,16 @@
 set -uo pipefail
 
 FOREGROUND=false
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: scan-packages.sh [OPTIONS]"
+    echo ""
+    echo "Scan bash history for installed packages (apt, brew, pip, choco, etc.) and cache them."
+    echo ""
+    echo "Options:"
+    echo "  --foreground  Run in foreground and print the package cache"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
 [[ "${1:-}" == "--foreground" ]] && FOREGROUND=true
 
 HISTFILE_PATH="${HISTFILE:-$HOME/.bash_history}"

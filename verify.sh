@@ -2,6 +2,16 @@
 # verify.sh — Verify shell-kit dotfiles status (local vs git)
 # Usage: bash verify.sh
 
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: verify.sh [OPTIONS]"
+    echo ""
+    echo "Verify shell-kit dotfiles status (local vs git repo) and offer interactive fixes."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
+
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST="$REPO_DIR/manifest.json"
 
@@ -22,7 +32,7 @@ esac
 printf "\n${_CYAN}${_BOLD}shell-kit verify${_RST} — Platform: ${PLATFORM}\n"
 printf "${_CYAN}Repo: ${REPO_DIR}${_RST}\n\n"
 printf "%-35s %-16s %-12s %-12s %s\n" "File" "Local" "Symlink" "Git" "Action"
-printf "%-35s %-16s %-12s %-12s %s\n" "───────────────────────────────────" "────────────────" "────────────" "────────────" "──────"
+printf "%-35s %-16s %-12s %-12s %s\n" "-----------------------------------" "----------------" "------------" "------------" "------"
 
 declare -a ACTIONS=()
 declare -a ACTION_FILES=()
@@ -91,7 +101,7 @@ check_file() {
 
 # Parse manifest with python3 if available
 if command -v python3 &>/dev/null; then
-    mapfile -t FILE_LINES < <(python3 - "$MANIFEST" "$PLATFORM" <<'PYEOF'
+    FILE_LINES_RAW=$(python3 - "$MANIFEST" "$PLATFORM" <<'PYEOF' | tr -d '\r'
 import sys, json
 manifest_path, platform = sys.argv[1], sys.argv[2]
 with open(manifest_path) as f:
@@ -103,7 +113,8 @@ for entry in manifest["files"]:
     if target:
         print(f"{src}|{target}")
 PYEOF
-    )
+)
+    mapfile -t FILE_LINES <<< "$FILE_LINES_RAW"
     for line in "${FILE_LINES[@]:-}"; do
         IFS='|' read -r src target <<< "$line"
         check_file "$src" "$target"
@@ -126,7 +137,7 @@ if [ -d "$HOME/.local/bin" ]; then
         [ -f "$f" ] || continue
         local_name=$(basename "$f")
         if ! grep -q "$local_name" "$MANIFEST" 2>/dev/null; then
-            printf "  ${_YELLOW}⚠  Untracked locally: ~/.local/bin/${local_name}${_RST} — not in manifest\n"
+            printf "  ${_YELLOW}[WARNING] Untracked locally: ~/.local/bin/${local_name}${_RST} — not in manifest\n"
         fi
     done
 fi
@@ -154,4 +165,4 @@ if [ ${#ACTIONS[@]} -gt 0 ]; then
     esac
 fi
 
-printf "\n${_GREEN}${_BOLD}✓ Verify complete${_RST}\n\n"
+printf "\n${_GREEN}${_BOLD}[OK] Verify complete${_RST}\n\n"

@@ -14,6 +14,17 @@
 
 set -euo pipefail
 
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: history-clean.sh [OPTIONS]"
+    echo ""
+    echo "Deduplicate ~/.bash_history safely, keeping only the most recent occurrence"
+    echo "of each command and backing up the original file."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
+
 HISTFILE="${HOME}/.bash_history"
 BACKUP="${HOME}/.bash_history.bak"
 
@@ -27,7 +38,7 @@ _RST='\033[0m'
 
 # Check history file exists
 if [ ! -f "$HISTFILE" ]; then
-    printf "${_RED}✗ History file not found: ${HISTFILE}${_RST}\n"
+    printf "${_RED}Error: History file not found: ${HISTFILE}${_RST}\n"
     exit 1
 fi
 
@@ -36,7 +47,7 @@ before=$(wc -l < "$HISTFILE")
 
 # Create backup
 cp "$HISTFILE" "$BACKUP"
-printf "${_CYAN}📋 Backup created: ${BACKUP}${_RST}\n"
+printf "${_CYAN}Backup created: ${BACKUP}${_RST}\n"
 
 # Deduplicate: keep last (most recent) occurrence of each command
 # 1. tac reverses (newest first)
@@ -47,7 +58,7 @@ tac "$HISTFILE" | awk '!seen[$0]++' | tac > "$tmpfile"
 
 # Verify the temp file is not empty (safety check)
 if [ ! -s "$tmpfile" ]; then
-    printf "${_RED}✗ Error: dedup produced empty file. Aborting. Backup preserved.${_RST}\n"
+    printf "${_RED}Error: dedup produced empty file. Aborting. Backup preserved.${_RST}\n"
     rm -f "$tmpfile"
     exit 1
 fi
@@ -66,7 +77,7 @@ if [[ $- == *i* ]]; then
 fi
 
 # Report
-printf "${_GREEN}✓ History cleaned: ${_BOLD}${before}${_RST}${_GREEN} → ${_BOLD}${after}${_RST}${_GREEN} entries${_RST}\n"
+printf "${_GREEN}History cleaned: ${_BOLD}${before}${_RST}${_GREEN} -> ${_BOLD}${after}${_RST}${_GREEN} entries${_RST}\n"
 
 if [ "$removed" -gt 0 ]; then
     printf "${_YELLOW}  Removed ${_BOLD}${removed}${_RST}${_YELLOW} duplicates${_RST}\n"

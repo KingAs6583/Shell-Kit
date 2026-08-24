@@ -4,6 +4,16 @@
 
 set -uo pipefail
 
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: install.sh [OPTIONS]"
+    echo ""
+    echo "Install shell-kit dotfiles via symlinks (or copies on Windows without dev mode)."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
+
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST="$REPO_DIR/manifest.json"
 
@@ -33,8 +43,8 @@ if [ "$PLATFORM" = "windows" ]; then
     TESTTARGET="$REPO_DIR/manifest.json"
     ln -sf "$TESTTARGET" "$TESTLINK" 2>/dev/null && rm -f "$TESTLINK" || CAN_SYMLINK=false
     if ! $CAN_SYMLINK; then
-        printf "${_YELLOW}⚠  Symlinks unavailable (Windows Developer Mode may be off).${_RST}\n"
-        printf "${_YELLOW}   Falling back to file copies. Enable Developer Mode for symlinks.${_RST}\n\n"
+        printf "${_YELLOW}[WARNING] Symlinks unavailable (Windows Developer Mode may be off).${_RST}\n"
+        printf "${_YELLOW}          Falling back to file copies. Enable Developer Mode for symlinks.${_RST}\n\n"
     fi
 fi
 
@@ -53,17 +63,17 @@ install_file() {
     # Backup if exists and is not already our symlink
     if [ -e "$target" ] && [ ! -L "$target" ]; then
         mv "$target" "${target}.bak"
-        printf "  ${_YELLOW}↩  Backed up: ${target}.bak${_RST}\n"
+        printf "  ${_YELLOW}[BACKUP] Backed up: ${target}.bak${_RST}\n"
     elif [ -L "$target" ]; then
         rm -f "$target"
     fi
 
     if $CAN_SYMLINK; then
         ln -sf "$src" "$target"
-        printf "  ${_GREEN}🔗 Linked:   $(basename "$target")${_RST}  →  $src\n"
+        printf "  ${_GREEN}[LINKED] Linked:   $(basename "$target")${_RST}  →  $src\n"
     else
         cp "$src" "$target"
-        printf "  ${_GREEN}📋 Copied:   $(basename "$target")${_RST}\n"
+        printf "  ${_GREEN}[COPIED] Copied:   $(basename "$target")${_RST}\n"
     fi
 
     if [ "$executable" = "true" ]; then
@@ -78,7 +88,7 @@ mkdir -p "$HOME/.local/bin"
 # We parse JSON manually (no jq needed — pure bash)
 if command -v python3 &>/dev/null; then
     # Use python3 to parse JSON if available
-    python3 - "$MANIFEST" "$PLATFORM" "$REPO_DIR" <<'PYEOF'
+    INSTALL_LINES_RAW=$(python3 - "$MANIFEST" "$PLATFORM" "$REPO_DIR" <<'PYEOF' | tr -d '\r'
 import sys, json
 
 manifest_path, platform, repo_dir = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -94,7 +104,8 @@ for entry in manifest["files"]:
     if target:
         print(f"{repo_dir}/{src}|{target}|{executable}")
 PYEOF
-    mapfile -t INSTALL_LINES < <(python3 - "$MANIFEST" "$PLATFORM" "$REPO_DIR" 2>/dev/null)
+)
+    mapfile -t INSTALL_LINES <<< "$INSTALL_LINES_RAW"
     for line in "${INSTALL_LINES[@]:-}"; do
         IFS='|' read -r src target executable <<< "$line"
         install_file "$src" "$target" "$executable"
@@ -110,5 +121,5 @@ else
     install_file "$REPO_DIR/scripts/scan-packages.sh"         "~/.local/bin/scan-packages.sh"         true
 fi
 
-printf "\n${_GREEN}${_BOLD}✓ Installation complete!${_RST}\n"
+printf "\n${_GREEN}${_BOLD}[OK] Installation complete!${_RST}\n"
 printf "  Open a new terminal to apply changes.\n\n"

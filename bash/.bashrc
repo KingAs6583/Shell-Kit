@@ -214,7 +214,13 @@ alias pkgscan='bash /d/Projects/shell-kit/scripts/scan-packages.sh --foreground 
 alias pyvenvs='__find_python_venvs'
 
 # ─────────────────────────────────────────────────────────────
-# 15. SOURCE EXTERNAL FILES
+# 15. DOTFILES MANAGEMENT ALIAS
+# ─────────────────────────────────────────────────────────────
+
+alias dotfiles='bash ~/.local/bin/dotfiles.sh'
+
+# ─────────────────────────────────────────────────────────────
+# 16. SOURCE EXTERNAL FILES
 # ─────────────────────────────────────────────────────────────
 
 # Load cross-platform functions (works on all OS)

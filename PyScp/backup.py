@@ -23,6 +23,10 @@ RESET = "\033[0m"
 BOLD = "\033[1m"
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Orchestrator to run Git Projects Scanner and Asset Vaults Backup.")
+    parser.parse_args()
+
     script_dir = Path(__file__).resolve().parent
     git_scanner_path = script_dir / "git_scanner.py"
     asset_backup_path = script_dir / "asset_backup.py"

@@ -105,6 +105,10 @@ def get_tracked_files():
     return tracked
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Inspect user configuration directory for heavy folders, cache bloat, and untracked configuration files.")
+    parser.parse_args()
+
     home = Path("~").expanduser().resolve()
     print(f"\n{BOLD}{'=' * 80}{RESET}")
     print(f"{BOLD}HOME DIRECTORY CONFIGURATION INSPECTOR (~/){RESET}")

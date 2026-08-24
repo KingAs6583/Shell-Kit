@@ -1,5 +1,5 @@
 # shell-kit — Context & Project Summary
-> Last updated: 2026-08-23 | 4 commits on `main`
+> Last updated: 2026-08-24 | 6 commits on `main`
 
 ## What This Repo Is
 `shell-kit` is a personal shell toolkit and dotfiles manager for **Windows (Git Bash)**, **Linux**, and **macOS**.
@@ -18,9 +18,9 @@ Functions are split by platform compatibility:
 
 | File | Platform | Purpose |
 |------|----------|---------|
-| `bash/.bash_function.both` | ✅ All | Git setup, SSH key management |
-| `bash/.bash_function.linux` | 🐧 Linux | apt update, sysinfo, RAM, scandisk |
-| `bash/.bash_function.windows` | 🪟 Windows | Explorer, path converters, devmode |
+| `bash/.bash_function.both` | All | Git setup, SSH key management |
+| `bash/.bash_function.linux` | Linux | apt update, sysinfo, RAM, scandisk |
+| `bash/.bash_function.windows` | Windows | Explorer, path converters, devmode |
 | `bash/.bash_function` | legacy | Deprecated monolithic file |
 
 `.bashrc` auto-detects `$PLATFORM` and sources only the appropriate file.
@@ -45,6 +45,11 @@ shell-kit/
 │   ├── .bash_function.linux     Linux functions (6.5kb)
 │   ├── .bash_function.windows   Windows functions (3.8kb)
 │   └── .profile                 PATH additions
+├── PyScp/
+│   ├── asset_backup.py          Zip non-git folders (documents, assets, vaults)
+│   ├── backup.py                Backup orchestrator
+│   ├── config_inspector.py      Inspect and validate config schemas
+│   └── git_scanner.py           Scan project dirs, report uncommitted repos
 ├── scripts/
 │   ├── history-clean.sh         Dedup ~/.bash_history
 │   ├── setup-codebase-memory.sh Install codebase-memory-mcp
@@ -84,6 +89,7 @@ shell-kit/
 - Python: `pyvenvs`
 - AI: `prompts mcp|review|debug|tokens`
 - Dotfiles: `dotfiles verify|install|sync|status`
+- Backup: `bkscan` (scan git repos), `bkrun` (run backup), `bkrestore` (restore assets), `cfginspect` (validate config)
 
 ### Cross-platform Functions (`.bash_function.both`)
 - `setupGithubSshKey` — interactive ed25519 key generator
@@ -116,11 +122,12 @@ shell-kit/
 
 ## Planned / In Progress
 
-- [ ] **Backup scanner** — check git repos for uncommitted changes + zip asset/vault folders
-  - `git-scanner.sh` — scan project dirs, report uncommitted repos
-  - `asset-backup.sh` — zip non-git folders (documents, assets, vaults)
-  - `backup.sh` — orchestrator that runs both
-  - Lossless zip, cross-platform (zip/tar.gz), config-driven (JSON)
+- [x] **Backup scanner** — check git repos for uncommitted changes + zip asset/vault folders
+  - `git_scanner.py` — scan project dirs, report uncommitted repos (`bkscan` command)
+  - `asset_backup.py` — zip non-git folders (documents, assets, vaults, `bkrun` / `bkrestore` commands)
+  - `backup.py` — orchestrator that runs both (`bkrun` command)
+  - `config_inspector.py` — inspect and validate JSON configurations (`cfginspect` command)
+  - Lossless zip, cross-platform (Windows/Linux/Mac), config-driven (`backup_config.json`)
 
 ---
 
@@ -128,8 +135,8 @@ shell-kit/
 
 | Old Repo | Status |
 |----------|--------|
-| `LinuxShellScripts` | ✅ Decommissioned — all useful scripts migrated |
-| `~/.bashrc` (original) | ✅ Replaced by shell-kit version |
+| `LinuxShellScripts` | Decommissioned — all useful scripts migrated |
+| `~/.bashrc` (original) | Replaced by shell-kit version |
 
 ---
 

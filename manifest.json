@@ -79,26 +79,32 @@
       "platform": "linux"
     },
     {
-      "src": "scripts/git_scanner.py",
+      "src": "PyScp/git_scanner.py",
       "targets": { "windows": "~/.local/bin/git_scanner.py", "linux": "~/.local/bin/git_scanner.py", "mac": "~/.local/bin/git_scanner.py" },
       "executable": true,
       "platform": "both"
     },
     {
-      "src": "scripts/asset_backup.py",
+      "src": "PyScp/asset_backup.py",
       "targets": { "windows": "~/.local/bin/asset_backup.py", "linux": "~/.local/bin/asset_backup.py", "mac": "~/.local/bin/asset_backup.py" },
       "executable": true,
       "platform": "both"
     },
     {
-      "src": "scripts/backup.py",
+      "src": "PyScp/backup.py",
       "targets": { "windows": "~/.local/bin/backup.py", "linux": "~/.local/bin/backup.py", "mac": "~/.local/bin/backup.py" },
       "executable": true,
       "platform": "both"
     },
     {
-      "src": "scripts/config_inspector.py",
+      "src": "PyScp/config_inspector.py",
       "targets": { "windows": "~/.local/bin/config_inspector.py", "linux": "~/.local/bin/config_inspector.py", "mac": "~/.local/bin/config_inspector.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "dotfiles.sh",
+      "targets": { "windows": "~/.local/bin/dotfiles.sh", "linux": "~/.local/bin/dotfiles.sh", "mac": "~/.local/bin/dotfiles.sh" },
       "executable": true,
       "platform": "both"
     }

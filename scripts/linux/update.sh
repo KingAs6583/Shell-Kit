@@ -4,6 +4,16 @@
 # Usage: bash update.sh
 # ─────────────────────────────────────────────────────────────
 
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: update.sh [OPTIONS]"
+    echo ""
+    echo "Full system update (apt update, upgrade, autoremove, autoclean) for Linux."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
+
 # Linux guard
 if [[ "$(uname -s)" != "Linux" ]]; then
     echo "Error: This script is Linux-only (requires apt)." >&2
@@ -14,7 +24,7 @@ _GREEN='\033[0;32m'; _CYAN='\033[0;36m'; _BOLD='\033[1m'; _RST='\033[0m'
 
 line() {
     local col; col=$(tput cols 2>/dev/null || echo 80)
-    [ "$col" -gt 100 ] && printf '%0.s─' {1..120} || printf '%0.s─' {1..70}
+    [ "$col" -gt 100 ] && printf '%0.s-' {1..120} || printf '%0.s-' {1..70}
     echo ""
 }
 

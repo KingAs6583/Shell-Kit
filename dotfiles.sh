@@ -10,7 +10,11 @@ _GREEN='\033[0;32m'
 _BOLD='\033[1m'
 _RST='\033[0m'
 
-cmd="${1:-help}"
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    cmd="help"
+else
+    cmd="${1:-help}"
+fi
 shift || true
 
 case "$cmd" in

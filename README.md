@@ -1,11 +1,11 @@
-# shell-kit 🛠️
+# shell-kit
 
 > Personal shell toolkit — bash configs, utility scripts, and dotfiles manager.
 > Works on **Windows (Git Bash)**, **Linux**, and **macOS**.
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### New Machine Setup
 ```bash
@@ -29,16 +29,21 @@ dotfiles status    # git status of this repo
 
 ---
 
-## 📁 Structure
+## Structure
 
 ```
 shell-kit/
+├── PyScp/
+│   ├── asset_backup.py          Zip non-git folders
+│   ├── backup.py                Backup orchestrator
+│   ├── config_inspector.py      Inspect and validate config schemas
+│   └── git_scanner.py           Scan project dirs, report uncommitted repos
 ├── bash/
 │   ├── .bashrc                  Main config — options, aliases, sources
 │   ├── .bash_profile            Login shell bridge (Git Bash fix)
-│   ├── .bash_function.both      Functions: works on ALL platforms ✅
-│   ├── .bash_function.linux     Functions: Linux only 🐧 (auto-guarded)
-│   ├── .bash_function.windows   Functions: Windows only 🪟 (auto-guarded)
+│   ├── .bash_function.both      Functions: works on ALL platforms
+│   ├── .bash_function.linux     Functions: Linux only (auto-guarded)
+│   ├── .bash_function.windows   Functions: Windows only (auto-guarded)
 │   ├── .bash_function           Legacy (deprecated, kept for compat)
 │   └── .profile                 PATH and environment variables
 ├── scripts/
@@ -46,12 +51,12 @@ shell-kit/
 │   ├── setup-codebase-memory.sh Install codebase-memory-mcp (cross-platform)
 │   ├── scan-packages.sh         Scan history for installed packages
 │   └── linux/
-│       ├── update.sh            Full apt update/upgrade/clean cycle 🐧
-│       ├── system-info.sh       Hardware info via dmidecode 🐧
-│       └── ram-info.sh          RAM details 🐧
+│       ├── update.sh            Full apt update/upgrade/clean cycle
+│       ├── system-info.sh       Hardware info via dmidecode
+│       └── ram-info.sh          RAM details
 ├── .gitignore
 ├── .gitattributes               Enforce LF line endings
-├── manifest.json                File registry — src → install path per OS
+├── manifest.json                File registry — src -> install path per OS
 ├── install.sh                   Symlink all tracked files to correct locations
 ├── verify.sh                    Audit local vs git, offer fixes interactively
 ├── dotfiles.sh                  CLI dispatcher for dotfiles management
@@ -60,7 +65,7 @@ shell-kit/
 
 ---
 
-## 🖥️ Prompt
+## Prompt
 
 Two-line, cyan/teal themed:
 ```
@@ -74,9 +79,9 @@ Two-line, cyan/teal themed:
 
 ---
 
-## 📋 Command Reference
+## Command Reference
 
-### 📜 History
+### History
 | Command | Action |
 |---------|--------|
 | `h` | Last 30 commands (numbered for `!N` recall) |
@@ -85,7 +90,7 @@ Two-line, cyan/teal themed:
 | `hhelp` | Colored cheat sheet: `!!`, `!$`, `!42`, `^old^new` |
 | `hclean` | Deduplicate history file (backup first) |
 
-### 🔀 Git Aliases
+### Git Aliases
 | Command | Action |
 |---------|--------|
 | `gs` | `git status -sb` |
@@ -96,7 +101,7 @@ Two-line, cyan/teal themed:
 | `glog` | Pretty graph log (last 20) |
 | `gb` / `gco` / `gsw` | branch / checkout / switch |
 
-### 🔧 Git Setup Functions (`both`)
+### Git Setup Functions (`both`)
 | Command | Action |
 |---------|--------|
 | `setupGit "msg" <url>` | Init repo + first commit + push |
@@ -106,7 +111,7 @@ Two-line, cyan/teal themed:
 | `listSshConfig` | List all SSH host aliases from `~/.ssh/config` |
 | `setupGithubSshKey` | Interactive: generate ed25519 key, configure `~/.ssh/config`, copy pubkey |
 
-### 💻 Dev Tools (Node / TypeScript)
+### Dev Tools (Node / TypeScript)
 | Command | Action |
 |---------|--------|
 | `lint` | `npm run lint` |
@@ -114,7 +119,7 @@ Two-line, cyan/teal themed:
 | `tsc` / `typecheck` | `npx tsc --noEmit` |
 | `dev` / `build` / `start` | `npm run dev/build/start` |
 
-### 🌳 File System
+### File System
 | Command | Action |
 |---------|--------|
 | `t` | Tree depth 2 (excludes node_modules/.git) |
@@ -126,7 +131,7 @@ Two-line, cyan/teal themed:
 | `fdiff f1 f2` | Colored file diff (git engine) |
 | `ddiff d1 d2` | Colored directory diff |
 
-### 🔍 Grep Shortcuts
+### Grep Shortcuts
 | Command | Action |
 |---------|--------|
 | `gr pattern` | Recursive grep — color + line numbers |
@@ -135,20 +140,20 @@ Two-line, cyan/teal themed:
 | `gf '*.tsx'` | Find files by name pattern |
 | `todo` | Find all TODO/FIXME/HACK comments |
 
-### 🧭 Navigation
+### Navigation
 | Command | Action |
 |---------|--------|
 | `..` / `...` / `....` | Go up 1/2/3 directories |
 | `mkcd name` | Create directory and `cd` into it |
 
-### 🐍 Python & Packages
+### Python & Packages
 | Command | Action |
 |---------|--------|
 | `pyvenvs` | Find all Python venvs with activate commands |
 | `pkglist` | Show cached installed packages (instant) |
 | `pkgscan` | Force rescan of history for packages |
 
-### 🤖 AI Prompts
+### AI Prompts
 | Command | Action |
 |---------|--------|
 | `prompts mcp` | Codebase Memory MCP template |
@@ -156,7 +161,7 @@ Two-line, cyan/teal themed:
 | `prompts debug` | Bug report template |
 | `prompts tokens` | Token-saving patterns |
 
-### 🐧 Linux Only
+### Linux Only
 | Command | Action |
 |---------|--------|
 | `sysupdate` | Full apt update + upgrade + autoremove + autoclean |
@@ -165,7 +170,7 @@ Two-line, cyan/teal themed:
 | `raminfo` | RAM usage + hardware details |
 | `scandisk [path]` | Find large files, large dirs, old files |
 
-### 🪟 Windows Only
+### Windows Only
 | Command | Action |
 |---------|--------|
 | `explore [path]` | Open path in Windows Explorer |
@@ -176,7 +181,7 @@ Two-line, cyan/teal themed:
 | `pslist [filter]` | List running processes |
 | `devmode` | Check if Developer Mode is ON (needed for symlinks) |
 
-### 🛡️ Safety
+### Safety
 | Feature | Action |
 |---------|--------|
 | `rm -rf .` / `*` / `/` / `~` | **Blocked** with red warning |
@@ -185,20 +190,20 @@ Two-line, cyan/teal themed:
 
 ---
 
-## 🔄 How Dotfiles Work
+## How Dotfiles Work
 
 All files in `bash/` and `scripts/` are tracked in `manifest.json` with their install paths per OS.
 `install.sh` creates **symlinks** so edits to `~/.bashrc` automatically update the repo file.
 
 ```
-~/.bashrc  ──symlink──▶  D:/Projects/shell-kit/bash/.bashrc
+~/.bashrc  --symlink-->  D:/Projects/shell-kit/bash/.bashrc
 ```
 
 On Windows, symlinks require **Developer Mode** (Settings → System → For Developers). Run `devmode` to check. If unavailable, `install.sh` falls back to file copies.
 
 ---
 
-## 📦 Platform Detection
+## Platform Detection
 
 Auto-detected at shell startup via `$PLATFORM`:
 
@@ -210,7 +215,7 @@ Platform-specific functions are loaded automatically — Linux functions are **n
 
 ---
 
-## 🚀 Push to GitHub
+## Push to GitHub
 
 ```bash
 cd /d/Projects/shell-kit        # Windows

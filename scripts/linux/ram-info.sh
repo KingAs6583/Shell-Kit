@@ -4,10 +4,20 @@
 # Usage: bash ram-info.sh
 # ─────────────────────────────────────────────────────────────
 
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: ram-info.sh"
+    echo ""
+    echo "Display memory usage and detailed RAM hardware information."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
+
 [[ "$(uname -s)" != "Linux" ]] && { echo "Linux only." >&2; exit 1; }
 
 _CYAN='\033[0;36m'; _BOLD='\033[1m'; _RST='\033[0m'
-_line() { printf '%0.s─' {1..60}; echo ""; }
+_line() { printf '%0.s-' {1..60}; echo ""; }
 
 printf "\n${_CYAN}${_BOLD}RAM Information${_RST}\n"
 _line

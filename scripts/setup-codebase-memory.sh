@@ -2,6 +2,22 @@
 
 set -euo pipefail
 
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: setup-codebase-memory.sh [uninstall | OPTIONS]"
+    echo ""
+    echo "Install or uninstall codebase-memory-mcp."
+    echo ""
+    echo "Commands:"
+    echo "  uninstall     Uninstall codebase-memory-mcp"
+    echo ""
+    echo "Options:"
+    echo "  --ui          Install Graph UI version"
+    echo "  --skip-config Only install binary"
+    echo "  --dir PATH    Custom installation directory"
+    echo "  -h, --help    Show this help message and exit"
+    exit 0
+fi
+
 REPO="DeusData/codebase-memory-mcp"
 INSTALL_URL="https://raw.githubusercontent.com/${REPO}/main/install.sh"
 INSTALL_PS_URL="https://raw.githubusercontent.com/${REPO}/main/install.ps1"

@@ -173,6 +173,10 @@ def write_csv_report(results, csv_filename="git_status_report.csv"):
         return None
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Scan project directories for Git repositories and report status.")
+    parser.parse_args()
+
     config, config_path = load_config()
     if not config:
         print(f"{RED}Error: No backup_config.json configuration file found!{RESET}")
