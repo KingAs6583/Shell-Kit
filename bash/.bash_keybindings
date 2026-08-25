@@ -1,0 +1,38 @@
+# ~/.bash_keybindings — Cross-OS Shell Readline Keybindings for Bash
+# Sourced dynamically in ~/.bashrc. Uses standard bind command.
+
+# ─────────────────────────────────────────────────────────────
+# 1. PREFIX HISTORY SEARCH (Arrow Keys)
+# ─────────────────────────────────────────────────────────────
+# Search history matching the prefix already typed on the line.
+# If the line is empty, behaves exactly like normal history cycle.
+bind '"\e[A": history-search-backward' 2>/dev/null
+bind '"\e[B": history-search-forward' 2>/dev/null
+bind '"\eOA": history-search-backward' 2>/dev/null
+bind '"\eOB": history-search-forward' 2>/dev/null
+
+# ─────────────────────────────────────────────────────────────
+# 2. WORD NAVIGATION (Ctrl+Left / Ctrl+Right)
+# ─────────────────────────────────────────────────────────────
+# Move cursor backward/forward word-by-word.
+bind '"\e[1;5C": forward-word' 2>/dev/null
+bind '"\e[1;5D": backward-word' 2>/dev/null
+bind '"\e[5C": forward-word' 2>/dev/null
+bind '"\e[5D": backward-word' 2>/dev/null
+
+# ─────────────────────────────────────────────────────────────
+# 3. WORD DELETION (Alt+Backspace / Ctrl+Backspace)
+# ─────────────────────────────────────────────────────────────
+# Delete word backward. Users can map Ctrl+Backspace to Alt+Backspace (\e\x7f).
+bind '"\e\x7f": backward-kill-word' 2>/dev/null
+
+# ─────────────────────────────────────────────────────────────
+# 4. HOME & END KEYS (Consistent behavior)
+# ─────────────────────────────────────────────────────────────
+# Explicitly map Home and End key escape sequences across terminals.
+bind '"\e[1~": beginning-of-line' 2>/dev/null
+bind '"\e[4~": end-of-line' 2>/dev/null
+bind '"\e[H": beginning-of-line' 2>/dev/null
+bind '"\e[F": end-of-line' 2>/dev/null
+bind '"\eOH": beginning-of-line' 2>/dev/null
+bind '"\eOF": end-of-line' 2>/dev/null

@@ -37,7 +37,10 @@ shell-kit/
 │   ├── asset_backup.py          Zip non-git folders
 │   ├── backup.py                Backup orchestrator
 │   ├── config_inspector.py      Inspect and validate config schemas
-│   └── git_scanner.py           Scan project dirs, report uncommitted repos
+│   ├── envmgr.py                PATH & environment variable manager
+│   ├── git_scanner.py           Scan project dirs, report uncommitted repos
+│   ├── help_enforcer.py         Validator for --help/manual rules
+│   └── portwatch.py             Process port watcher & killer
 ├── bash/
 │   ├── .bashrc                  Main config — options, aliases, sources
 │   ├── .bash_profile            Login shell bridge (Git Bash fix)
@@ -145,6 +148,8 @@ Two-line, cyan/teal themed:
 |---------|--------|
 | `..` / `...` / `....` | Go up 1/2/3 directories |
 | `mkcd name` | Create directory and `cd` into it |
+| `d` | Show unique directory stack with home-relative paths (`~`) |
+| `1` to `9` | Jump directly to stack index target |
 
 ### Python & Packages
 | Command | Action |
@@ -192,6 +197,8 @@ Two-line, cyan/teal themed:
 | Command / Utility | Action |
 |-------------------|--------|
 | `manual` | Unified help cheat sheet: displays all commands, functions, and aliases |
+| `envmgr` | Safe marked-block PATH directory manager (list, add, remove, clean) |
+| `portwatch <port>` | Identify and kill active processes listening on port |
 | `scripts/sandbox.sh [--no-install] [cmd]` | Runs an isolated subshell (or custom command) in a temporary folder under `/tmp/`. Includes `deactivate` alias for quick exit and cleanup. |
 | `uninstall.sh` | Cleans up local bin and runs `--cleanup` on stateful scripts before deleting symlinks |
 | `PyScp/help_enforcer.py` | Validates that all functions/scripts conform to `--help` and `manual` registry rules |

@@ -57,6 +57,7 @@ BGREEN='\[\033[1;32m\]'
 BYELLOW='\[\033[1;33m\]'
 BCYAN='\[\033[1;36m\]'
 BMAGENTA='\[\033[1;35m\]'
+BBLUE='\[\033[1;34m\]'
 
 export LESS_TERMCAP_mb=$'\E[1;31m'
 export LESS_TERMCAP_md=$'\E[1;36m'
@@ -77,7 +78,7 @@ elif [ -f "/etc/bash_completion.d/git-prompt" ]; then
 fi
 
 export GIT_PS1_SHOWDIRTYSTATE=1
-export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWUNTRACKEDFILES=
 export GIT_PS1_SHOWSTASHSTATE=1
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
@@ -94,7 +95,24 @@ __build_prompt() {
         local branch
         branch=$(__git_ps1 "%s" 2>/dev/null || true)
         if [ -n "$branch" ]; then
-            git_info="  \[\033[1;33m\] ${branch}\[\033[0m\]"
+            # Extract just the branch name for color matching
+            local branch_name="${branch%% *}"
+            local color=""
+            case "$branch_name" in
+                main|master)
+                    color="$BMAGENTA"
+                    ;;
+                dev|development)
+                    color="$BBLUE"
+                    ;;
+                release/*)
+                    color="$BGREEN"
+                    ;;
+                *)
+                    color="$BCYAN"
+                    ;;
+            esac
+            git_info="  ${color}${branch}${RST}"
         fi
     fi
 
@@ -107,12 +125,17 @@ __build_prompt() {
 
     local arrow
     if [ $exit_code -eq 0 ]; then
-        arrow="\[\033[1;35m\]❯\[\033[0m\]"
+        arrow="\[\033[1;35m\]>\[\033[0m\]"
     else
-        arrow="\[\033[1;31m\]❯\[\033[0m\]"
+        arrow="\[\033[1;31m\]>\[\033[0m\]"
     fi
 
-    PS1="\n ${venv_info}\[\033[1;36m\]${short_path}\[\033[0m\]${git_info}\n ${arrow} "
+    local took_line=""
+    if [ -n "${__shkit_took_msg:-}" ]; then
+        took_line=" ${__shkit_took_msg}\n"
+    fi
+
+    PS1="\n${took_line} ${venv_info}\[\033[1;36m\]${short_path}\[\033[0m\]${git_info}\n ${arrow} "
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -133,7 +156,113 @@ __maybe_bg_scan() {
     fi
 }
 
-PROMPT_COMMAND='history -a; history -c; history -r; __build_prompt; __maybe_bg_scan'
+# Command execution timer settings
+SHKIT_TIMER_THRESHOLD="${SHKIT_TIMER_THRESHOLD:-1.5}"
+__cmd_start_time=""
+__shkit_took_msg=""
+__shkit_in_prompt_command=0
+
+__calc_cmd_duration() {
+    if [ -z "${__cmd_start_time:-}" ]; then
+        echo ""
+        return
+    fi
+
+    local start_s="${__cmd_start_time%.*}"
+    local start_us="${__cmd_start_time#*.}"
+    local end_s="${EPOCHREALTIME%.*}"
+    local end_us="${EPOCHREALTIME#*.}"
+
+    # Pad microseconds to 6 digits
+    while [ ${#start_us} -lt 6 ]; do start_us="${start_us}0"; done
+    while [ ${#end_us} -lt 6 ]; do end_us="${end_us}0"; done
+
+    # Remove leading zeros to avoid octal interpretation
+    start_us=$((10#$start_us))
+    end_us=$((10#$end_us))
+
+    local diff_s=$((end_s - start_s))
+    local diff_us=$((end_us - start_us))
+
+    if [ $diff_us -lt 0 ]; then
+        diff_s=$((diff_s - 1))
+        diff_us=$((diff_us + 1000000))
+    fi
+
+    # Round to 1 decimal place
+    local dec=$(((diff_us + 50000) / 100000))
+    if [ $dec -ge 10 ]; then
+        diff_s=$((diff_s + 1))
+        dec=0
+    fi
+
+    echo "${diff_s}.${dec}"
+}
+
+__show_took_time() {
+    local duration
+    duration=$(__calc_cmd_duration)
+    if [ -z "$duration" ]; then
+        __shkit_took_msg=""
+        return
+    fi
+
+    local thresh="${SHKIT_TIMER_THRESHOLD:-1.5}"
+    local thresh_int
+    if [[ "$thresh" == *.* ]]; then
+        local ts="${thresh%.*}"
+        local td="${thresh#*.}"
+        td="${td:0:1}"
+        thresh_int=$((10#$ts * 10 + 10#$td))
+    else
+        thresh_int=$((10#$thresh * 10))
+    fi
+
+    local dur_s="${duration%.*}"
+    local dur_d="${duration#*.}"
+    local dur_int=$((10#$dur_s * 10 + 10#$dur_d))
+
+    if [ $dur_int -ge $thresh_int ]; then
+        __shkit_took_msg="${BYELLOW}[took ${duration}s]${RST}"
+    else
+        __shkit_took_msg=""
+    fi
+}
+
+__record_cmd_start_time() {
+    # Guard against prompt command execution triggering the debug trap
+    if [ "${__shkit_in_prompt_command:-0}" -eq 1 ]; then
+        return
+    fi
+    if [ -z "$__cmd_start_time" ]; then
+        __cmd_start_time="$EPOCHREALTIME"
+    fi
+}
+
+if [ -n "${EPOCHREALTIME:-}" ]; then
+    trap '__record_cmd_start_time' DEBUG
+fi
+
+__shkit_prompt_command() {
+    # Calculate execution duration first
+    if [ -n "${EPOCHREALTIME:-}" ]; then
+        __show_took_time
+        __cmd_start_time=""
+    fi
+
+    # Guard prompt command helpers
+    __shkit_in_prompt_command=1
+
+    history -a
+    history -c
+    history -r
+    __build_prompt
+    __maybe_bg_scan
+
+    __shkit_in_prompt_command=0
+}
+
+PROMPT_COMMAND='__shkit_prompt_command'
 
 # ─────────────────────────────────────────────────────────────
 # 7. LS & COLOR ALIASES
@@ -225,6 +354,9 @@ alias dotfiles='bash ~/.local/bin/dotfiles.sh'
 
 # Load cross-platform functions (works on all OS)
 [ -f ~/.bash_function.both    ] && source ~/.bash_function.both
+
+# Load cross-platform keybindings
+[ -f ~/.bash_keybindings      ] && source ~/.bash_keybindings
 
 # Load platform-specific functions
 [ "$PLATFORM" = "linux"   ] && [ -f ~/.bash_function.linux   ] && source ~/.bash_function.linux

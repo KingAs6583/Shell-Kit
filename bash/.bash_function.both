@@ -49,6 +49,9 @@ manual() {
     printf "  ${G}hhelp${R}                Show shell history cheat sheet\n"
     printf "  ${G}pyvenvs${R}              Find Python virtual environments\n"
     printf "  ${G}pkglist / pkgscan${R}    Show/update history package cache\n"
+    printf "  ${G}envmgr${R}               PATH & environment variable manager\n"
+    printf "  ${G}d${R}                    Show directory stack and jump to 1-9\n"
+    printf "  ${G}portwatch <port>${R}    Identify and kill processes on a port\n"
     printf "\n"
     printf "${Y}5. LINUX UTILITIES [linux]${R}\n"
     printf "  ${G}sysupdate${R}            Full apt update/upgrade/clean cycle\n"
@@ -253,3 +256,176 @@ cfginspect() {
     fi
     _run_py_script "$HOME/.local/bin/config_inspector.py" "$@"
 }
+
+envmgr() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/envmgr.py" --help
+        return 0
+    fi
+
+    if [ "$#" -eq 0 ]; then
+        _run_py_script "$HOME/.local/bin/envmgr.py" --help
+        return 0
+    fi
+
+    local cmd="$1"
+    shift
+
+    # --cleanup doesn't need PATH argument
+    if [ "$cmd" = "--cleanup" ]; then
+        _run_py_script "$HOME/.local/bin/envmgr.py" "--cleanup"
+        return $?
+    fi
+
+    local cmd_output
+    cmd_output=$(_run_py_script "$HOME/.local/bin/envmgr.py" "$cmd" "$PATH" "$@")
+    local ret=$?
+    if [ $ret -eq 0 ] && [ -n "$cmd_output" ]; then
+        eval "$cmd_output"
+    fi
+    return $ret
+}
+
+# ─────────────────────────────────────────────────────────────
+# PROCESS PORT WATCHER & KILLER [both]
+# ─────────────────────────────────────────────────────────────
+
+portwatch() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/portwatch.py" --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/portwatch.py" "$@"
+}
+
+# ─────────────────────────────────────────────────────────────
+# DIRECTORY STACK NAVIGATOR (d) [both]
+# ─────────────────────────────────────────────────────────────
+
+declare -a __shkit_dir_stack=()
+
+cd() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        builtin cd --help
+        return $?
+    fi
+
+    local prev_dir="$PWD"
+    builtin cd "$@" || return $?
+
+    local current_dir
+    current_dir="$(pwd)"
+
+    if [ "$prev_dir" != "$current_dir" ]; then
+        local temp_stack=()
+        for item in "${__shkit_dir_stack[@]:-}"; do
+            if [ -n "$item" ] && [ "$item" != "$prev_dir" ] && [ "$item" != "$current_dir" ]; then
+                temp_stack+=("$item")
+            fi
+        done
+
+        __shkit_dir_stack=("$prev_dir" "${temp_stack[@]:-}")
+
+        if [ "${#__shkit_dir_stack[@]}" -gt 9 ]; then
+            __shkit_dir_stack=("${__shkit_dir_stack[@]:0:9}")
+        fi
+    fi
+}
+
+d() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: d"
+        echo ""
+        echo "Display the directory stack and jump back using numbers 1-9."
+        return 0
+    fi
+
+    if [ "${#__shkit_dir_stack[@]}" -eq 0 ]; then
+        echo "Directory stack is empty."
+        return 0
+    fi
+
+    local idx=1
+    for dir in "${__shkit_dir_stack[@]}"; do
+        local display_dir="$dir"
+        if [[ "$dir" == "$HOME"* ]]; then
+            display_dir="~${dir#$HOME}"
+        fi
+        printf "  %d  %s\n" "$idx" "$display_dir"
+        idx=$((idx + 1))
+    done
+}
+
+1() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 1"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[0]:-}" ]; then builtin cd "${__shkit_dir_stack[0]}" && pwd; else echo "Stack index 1 not set"; return 1; fi
+}
+
+2() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 2"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[1]:-}" ]; then builtin cd "${__shkit_dir_stack[1]}" && pwd; else echo "Stack index 2 not set"; return 1; fi
+}
+
+3() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 3"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[2]:-}" ]; then builtin cd "${__shkit_dir_stack[2]}" && pwd; else echo "Stack index 3 not set"; return 1; fi
+}
+
+4() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 4"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[3]:-}" ]; then builtin cd "${__shkit_dir_stack[3]}" && pwd; else echo "Stack index 4 not set"; return 1; fi
+}
+
+5() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 5"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[4]:-}" ]; then builtin cd "${__shkit_dir_stack[4]}" && pwd; else echo "Stack index 5 not set"; return 1; fi
+}
+
+6() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 6"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[5]:-}" ]; then builtin cd "${__shkit_dir_stack[5]}" && pwd; else echo "Stack index 6 not set"; return 1; fi
+}
+
+7() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 7"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[6]:-}" ]; then builtin cd "${__shkit_dir_stack[6]}" && pwd; else echo "Stack index 7 not set"; return 1; fi
+}
+
+8() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 8"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[7]:-}" ]; then builtin cd "${__shkit_dir_stack[7]}" && pwd; else echo "Stack index 8 not set"; return 1; fi
+}
+
+9() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Jump to stack directory 9"
+        return 0
+    fi
+    if [ -n "${__shkit_dir_stack[8]:-}" ]; then builtin cd "${__shkit_dir_stack[8]}" && pwd; else echo "Stack index 9 not set"; return 1; fi
+}
+
+

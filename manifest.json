@@ -9,6 +9,17 @@
       "executable": false
     },
     {
+      "src": "bash/.bash_keybindings",
+      "targets": { "windows": "~/.bash_keybindings", "linux": "~/.bash_keybindings", "mac": "~/.bash_keybindings" },
+      "executable": false
+    },
+    {
+      "src": "mintty/.minttyrc",
+      "targets": { "windows": "~/.minttyrc" },
+      "executable": false,
+      "platform": "windows"
+    },
+    {
       "src": "bash/.bash_profile",
       "targets": { "windows": "~/.bash_profile", "linux": "~/.bash_profile", "mac": "~/.bash_profile" },
       "executable": false
@@ -105,6 +116,18 @@
     {
       "src": "dotfiles.sh",
       "targets": { "windows": "~/.local/bin/dotfiles.sh", "linux": "~/.local/bin/dotfiles.sh", "mac": "~/.local/bin/dotfiles.sh" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/envmgr.py",
+      "targets": { "windows": "~/.local/bin/envmgr.py", "linux": "~/.local/bin/envmgr.py", "mac": "~/.local/bin/envmgr.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/portwatch.py",
+      "targets": { "windows": "~/.local/bin/portwatch.py", "linux": "~/.local/bin/portwatch.py", "mac": "~/.local/bin/portwatch.py" },
       "executable": true,
       "platform": "both"
     },

@@ -50,8 +50,10 @@ shell-kit/
 │   ├── asset_backup.py          Zip non-git folders (documents, assets, vaults)
 │   ├── backup.py                Backup orchestrator
 │   ├── config_inspector.py      Inspect and validate config schemas
+│   ├── envmgr.py                PATH & environment variable manager
 │   ├── git_scanner.py           Scan project dirs, report uncommitted repos
-│   └── help_enforcer.py         Validator for --help rules and manual command
+│   ├── help_enforcer.py         Validator for --help rules and manual command
+│   └── portwatch.py             Process port watcher & killer
 ├── scripts/
 │   ├── history-clean.sh         Dedup ~/.bash_history
 │   ├── setup-codebase-memory.sh Install codebase-memory-mcp
@@ -140,6 +142,10 @@ shell-kit/
 - [x] **Self-Cleanup Option & Safe Uninstallation**
   - Added `--cleanup` to stateful scripts (`scan-packages.sh`, `history-clean.sh`) to clean up their own caches and backups.
   - Configured `uninstall.sh` to dynamically run `--cleanup` on scripts that support it before deleting symlinks.
+- [x] **Interactive Environment, Port & Directory Stack Utilities**
+  - `envmgr.py` — PATH manager with safe marked-block profile editing (`envmgr` command)
+  - `portwatch.py` — process port checker & interactive force-killer (`portwatch` command)
+  - `d` / `1-9` — unique directory stack navigator and prompt jump shortcuts
 
 ---
 
