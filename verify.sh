@@ -2,15 +2,40 @@
 # verify.sh — Verify shell-kit dotfiles status (local vs git)
 # Usage: bash verify.sh
 
-if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-    echo "Usage: verify.sh [OPTIONS]"
-    echo ""
-    echo "Verify shell-kit dotfiles status (local vs git repo) and offer interactive fixes."
-    echo ""
-    echo "Options:"
-    echo "  -h, --help    Show this help message and exit"
-    exit 0
+PROFILE="desktop"
+# Auto-detect if running inside an SSH session
+if [ -n "${SSH_CONNECTION:-}" ] || [ -n "${SSH_CLIENT:-}" ] || [ -n "${SSH_TTY:-}" ]; then
+    PROFILE="server"
 fi
+
+# Parse options
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --server)
+            PROFILE="server"
+            shift
+            ;;
+        --desktop)
+            PROFILE="desktop"
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: verify.sh [OPTIONS]"
+            echo ""
+            echo "Verify shell-kit dotfiles status (local vs git repo) and offer interactive fixes."
+            echo ""
+            echo "Options:"
+            echo "  --server      Verify only server-compatible configurations (skips desktop-only files)"
+            echo "  --desktop     Verify all configurations (default, unless SSH session is detected)"
+            echo "  -h, --help    Show this help message and exit"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST="$REPO_DIR/manifest.json"
@@ -29,7 +54,7 @@ case "$(uname -s)" in
     *)                    PLATFORM="unknown" ;;
 esac
 
-printf "\n${_CYAN}${_BOLD}shell-kit verify${_RST} — Platform: ${PLATFORM}\n"
+printf "\n${_CYAN}${_BOLD}shell-kit verify${_RST} — Platform: ${PLATFORM} (${PROFILE} profile)\n"
 printf "${_CYAN}Repo: ${REPO_DIR}${_RST}\n\n"
 printf "%-35s %-16s %-12s %-12s %s\n" "File" "Local" "Symlink" "Git" "Action"
 printf "%-35s %-16s %-12s %-12s %s\n" "-----------------------------------" "----------------" "------------" "------------" "------"
@@ -101,15 +126,21 @@ check_file() {
 
 # Parse manifest with python3 if available
 if command -v python3 &>/dev/null; then
-    FILE_LINES_RAW=$(python3 - "$MANIFEST" "$PLATFORM" <<'PYEOF' | tr -d '\r'
+    FILE_LINES_RAW=$(python3 - "$MANIFEST" "$PLATFORM" "$PROFILE" <<'PYEOF' | tr -d '\r'
 import sys, json
-manifest_path, platform = sys.argv[1], sys.argv[2]
+manifest_path, platform, profile = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(manifest_path) as f:
     manifest = json.load(f)
 for entry in manifest["files"]:
     src = entry["src"]
     targets = entry.get("targets", {})
     target = targets.get(platform) or targets.get("linux")
+    entry_profile = entry.get("profile", "both")
+    
+    # Skip desktop-only files in server verification
+    if profile == "server" and entry_profile == "desktop":
+        continue
+        
     if target:
         print(f"{src}|{target}")
 PYEOF
@@ -152,7 +183,7 @@ if [ ${#ACTIONS[@]} -gt 0 ]; then
     printf "\nChoice: "
     read -r choice
     case "$choice" in
-        a|i) bash "$REPO_DIR/install.sh" ;;
+        a|i) bash "$REPO_DIR/install.sh" "--$PROFILE" ;;
         s)
             for i in "${!ACTIONS[@]}"; do
                 if [ "${ACTIONS[$i]}" = "sync" ]; then

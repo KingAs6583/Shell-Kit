@@ -4,15 +4,40 @@
 
 set -uo pipefail
 
-if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-    echo "Usage: install.sh [OPTIONS]"
-    echo ""
-    echo "Install shell-kit dotfiles via symlinks (or copies on Windows without dev mode)."
-    echo ""
-    echo "Options:"
-    echo "  -h, --help    Show this help message and exit"
-    exit 0
+PROFILE="desktop"
+# Auto-detect if running inside an SSH session
+if [ -n "${SSH_CONNECTION:-}" ] || [ -n "${SSH_CLIENT:-}" ] || [ -n "${SSH_TTY:-}" ]; then
+    PROFILE="server"
 fi
+
+# Parse options
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --server)
+            PROFILE="server"
+            shift
+            ;;
+        --desktop)
+            PROFILE="desktop"
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: install.sh [OPTIONS]"
+            echo ""
+            echo "Install shell-kit dotfiles via symlinks (or copies on Windows without dev mode)."
+            echo ""
+            echo "Options:"
+            echo "  --server      Install only server-compatible configurations (skips desktop-only files)"
+            echo "  --desktop     Install all configurations (default, unless SSH session is detected)"
+            echo "  -h, --help    Show this help message and exit"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST="$REPO_DIR/manifest.json"
@@ -34,6 +59,7 @@ esac
 
 printf "${_CYAN}${_BOLD}shell-kit installer${_RST}\n"
 printf "${_CYAN}Platform: ${PLATFORM}${_RST}\n"
+printf "${_CYAN}Profile:  ${PROFILE}${_RST}\n"
 printf "${_CYAN}Repo:     ${REPO_DIR}${_RST}\n\n"
 
 # Check if symlinks work on Windows (requires Developer Mode)
@@ -88,10 +114,10 @@ mkdir -p "$HOME/.local/bin"
 # We parse JSON manually (no jq needed — pure bash)
 if command -v python3 &>/dev/null; then
     # Use python3 to parse JSON if available
-    INSTALL_LINES_RAW=$(python3 - "$MANIFEST" "$PLATFORM" "$REPO_DIR" <<'PYEOF' | tr -d '\r'
+    INSTALL_LINES_RAW=$(python3 - "$MANIFEST" "$PLATFORM" "$REPO_DIR" "$PROFILE" <<'PYEOF' | tr -d '\r'
 import sys, json
 
-manifest_path, platform, repo_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+manifest_path, platform, repo_dir, profile = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 
 with open(manifest_path) as f:
     manifest = json.load(f)
@@ -101,6 +127,12 @@ for entry in manifest["files"]:
     targets = entry.get("targets", {})
     executable = str(entry.get("executable", False)).lower()
     target = targets.get(platform) or targets.get("linux")
+    entry_profile = entry.get("profile", "both")
+    
+    # Skip desktop-only files in server installations
+    if profile == "server" and entry_profile == "desktop":
+        continue
+        
     if target:
         print(f"{repo_dir}/{src}|{target}|{executable}")
 PYEOF

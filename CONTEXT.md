@@ -1,5 +1,5 @@
 # shell-kit — Context & Project Summary
-> Last updated: 2026-08-24 | 6 commits on `main`
+> Last updated: 2026-08-30 | 6 commits on `main`
 
 ## What This Repo Is
 `shell-kit` is a personal shell toolkit and dotfiles manager for **Windows (Git Bash)**, **Linux**, and **macOS**.
@@ -49,11 +49,19 @@ shell-kit/
 ├── PyScp/
 │   ├── asset_backup.py          Zip non-git folders (documents, assets, vaults)
 │   ├── backup.py                Backup orchestrator
+│   ├── clip_helper.py           Local OS clipboard access abstractions
+│   ├── clip_service.py          Local loopback bridge service for remote pastes
 │   ├── config_inspector.py      Inspect and validate config schemas
+│   ├── dbcli.py                 Interactive database inspector (Postgres, MySQL, SQLite)
+│   ├── diskguard.py             Automated build cache & disk space guard
+│   ├── dkutil.py                Infrastructure-agnostic container manager
+│   ├── envcfg.py                Interactive .env configuration manager
 │   ├── envmgr.py                PATH & environment variable manager
 │   ├── git_scanner.py           Scan project dirs, report uncommitted repos
 │   ├── help_enforcer.py         Validator for --help rules and manual command
-│   └── portwatch.py             Process port watcher & killer
+│   ├── ngutil.py                Nginx configurator and tailing utility
+│   ├── portwatch.py             Process port watcher & killer
+│   └── schedmgr.py              Cross-platform schedule task manager (cron/schtasks)
 ├── scripts/
 │   ├── history-clean.sh         Dedup ~/.bash_history
 │   ├── setup-codebase-memory.sh Install codebase-memory-mcp
@@ -65,7 +73,7 @@ shell-kit/
 │       └── ram-info.sh          RAM details
 ├── .gitignore
 ├── .gitattributes               Enforce LF
-├── manifest.json                19 tracked files with platform targets
+├── manifest.json                27 tracked files with platform targets
 ├── install.sh
 ├── uninstall.sh                 Uninstaller for utility scripts
 ├── verify.sh
@@ -103,6 +111,14 @@ shell-kit/
 - `upload "msg"` — add + commit + push
 - `globalConfig / localConfig` — git identity setup
 - `listSshConfig` — list SSH host aliases
+- `envcfg` — interactive `.env` configuration manager and setup wizard
+- `dbcli` — zero-dependency database interactive client and query assistant
+- `diskguard` — automated disk space & package cache cleanup utility (Gradle, Java, Node, etc.)
+- `dklist / dkclean / dklogs` — Docker/Podman container list, logs, and prune diagnostics
+- `ngstat / ngerr / ngconf` — Nginx config generator, noise-filtered log tailer, and Certbot SSL setup
+- `clipcopy / clippaste` — cross-host clipboard sharing (OSC 52 and reverse-forward port bridge)
+- `clipservice` — manager for background large-data clipboard tunnel bridge
+- `schedmgr` — cross-platform scheduled task manager (crontab / Windows Task Scheduler) with run logging
 
 ### Linux Functions (`.bash_function.linux`)
 - `sysupdate` — full apt cycle
@@ -142,10 +158,22 @@ shell-kit/
 - [x] **Self-Cleanup Option & Safe Uninstallation**
   - Added `--cleanup` to stateful scripts (`scan-packages.sh`, `history-clean.sh`) to clean up their own caches and backups.
   - Configured `uninstall.sh` to dynamically run `--cleanup` on scripts that support it before deleting symlinks.
-- [x] **Interactive Environment, Port & Directory Stack Utilities**
+- [x] **Interactive Environment, Port, Dotenv, DB & Directory Stack Utilities**
   - `envmgr.py` — PATH manager with safe marked-block profile editing (`envmgr` command)
   - `portwatch.py` — process port checker & interactive force-killer (`portwatch` command)
+  - `envcfg.py` — interactive `.env` configuration wizard & manager (`envcfg` command)
+  - `dbcli.py` — interactive database client and schema explorer (`dbcli` command)
   - `d` / `1-9` — unique directory stack navigator and prompt jump shortcuts
+- [x] **Automated Disk Space & Cache Guard (diskguard)**
+  - `diskguard.py` — concurrent project build folder (Gradle/Android/Node/Maven) and package cache scanner & cleanup utility (`diskguard` command)
+- [x] **Infrastructure-Agnostic Backend Utilities (dkutil & ngutil)**
+  - `dkutil.py` — Docker/Podman container manager (list, clean, logs)
+  - `ngutil.py` — Nginx configurator, status checker, filtered log tailer, and Certbot SSL setup
+- [x] **Unified Cross-Host Clipboard (clipcopy & clippaste)**
+  - `clip_helper.py` — cross-platform system clipboard access helper
+  - `clip_service.py` — local bridge microservice for large data pastes
+- [x] **Cross-Platform Schedule & Monitoring Manager (schedmgr)**
+  - `schedmgr.py` — OS-native task scheduler interface with execution logging
 
 ---
 

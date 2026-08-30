@@ -17,7 +17,8 @@
       "src": "mintty/.minttyrc",
       "targets": { "windows": "~/.minttyrc" },
       "executable": false,
-      "platform": "windows"
+      "platform": "windows",
+      "profile": "desktop"
     },
     {
       "src": "bash/.bash_profile",
@@ -46,7 +47,8 @@
       "src": "bash/.bash_function.windows",
       "targets": { "windows": "~/.bash_function.windows" },
       "executable": false,
-      "platform": "windows"
+      "platform": "windows",
+      "profile": "desktop"
     },
     {
       "src": "bash/.profile",
@@ -128,6 +130,54 @@
     {
       "src": "PyScp/portwatch.py",
       "targets": { "windows": "~/.local/bin/portwatch.py", "linux": "~/.local/bin/portwatch.py", "mac": "~/.local/bin/portwatch.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/envcfg.py",
+      "targets": { "windows": "~/.local/bin/envcfg.py", "linux": "~/.local/bin/envcfg.py", "mac": "~/.local/bin/envcfg.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/schedmgr.py",
+      "targets": { "windows": "~/.local/bin/schedmgr.py", "linux": "~/.local/bin/schedmgr.py", "mac": "~/.local/bin/schedmgr.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/clip_helper.py",
+      "targets": { "windows": "~/.local/bin/clip_helper.py", "linux": "~/.local/bin/clip_helper.py", "mac": "~/.local/bin/clip_helper.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/clip_service.py",
+      "targets": { "windows": "~/.local/bin/clip_service.py", "linux": "~/.local/bin/clip_service.py", "mac": "~/.local/bin/clip_service.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/dbcli.py",
+      "targets": { "windows": "~/.local/bin/dbcli.py", "linux": "~/.local/bin/dbcli.py", "mac": "~/.local/bin/dbcli.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/diskguard.py",
+      "targets": { "windows": "~/.local/bin/diskguard.py", "linux": "~/.local/bin/diskguard.py", "mac": "~/.local/bin/diskguard.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/dkutil.py",
+      "targets": { "windows": "~/.local/bin/dkutil.py", "linux": "~/.local/bin/dkutil.py", "mac": "~/.local/bin/dkutil.py" },
+      "executable": true,
+      "platform": "both"
+    },
+    {
+      "src": "PyScp/ngutil.py",
+      "targets": { "windows": "~/.local/bin/ngutil.py", "linux": "~/.local/bin/ngutil.py", "mac": "~/.local/bin/ngutil.py" },
       "executable": true,
       "platform": "both"
     },

@@ -35,6 +35,8 @@ manual() {
     printf "  ${G}bkrun${R}                Orchestrated scan + assets backup run\n"
     printf "  ${G}bkrestore${R}            Interactively restore/unzip asset archives\n"
     printf "  ${G}cfginspect${R}           Inspect configuration directory storage bloat\n"
+    printf "  ${G}diskguard [clean|cron]${R} Automated disk space and cache guard (Gradle, Android, Node, etc.)\n"
+    printf "  ${G}schedmgr${R}             Natively schedule and monitor periodic tasks\n"
     printf "\n"
     printf "${Y}3. GIT UTILITIES${R}\n"
     printf "  ${G}setupGit${R}             Initialize repo, stage files, and push to remote\n"
@@ -52,15 +54,25 @@ manual() {
     printf "  ${G}envmgr${R}               PATH & environment variable manager\n"
     printf "  ${G}d${R}                    Show directory stack and jump to 1-9\n"
     printf "  ${G}portwatch <port>${R}    Identify and kill processes on a port\n"
+    printf "  ${G}envcfg${R}               Interactive .env file setup and manager\n"
+    printf "  ${G}dbcli${R}                Interactive database CLI client\n"
+    printf "  ${G}clipcopy / clippaste${R} Copy/paste across hosts (OSC 52 & bridge)\n"
+    printf "  ${G}clipservice${R}          Manage clipboard large-data background bridge\n"
     printf "\n"
-    printf "${Y}5. LINUX UTILITIES [linux]${R}\n"
+    printf "${Y}5. INFRASTRUCTURE & BACKEND${R}\n"
+    printf "  ${G}dklist / dkclean${R}     List running containers / Prune unused items\n"
+    printf "  ${G}dklogs <container>${R}   Tail container logs in real time\n"
+    printf "  ${G}ngstat / ngerr${R}       Nginx status validation / Tail error logs\n"
+    printf "  ${G}ngconf create/ssl${R}    Nginx reverse-proxy generator & SSL Let's Encrypt\n"
+    printf "\n"
+    printf "${Y}6. LINUX UTILITIES [linux]${R}\n"
     printf "  ${G}sysupdate${R}            Full apt update/upgrade/clean cycle\n"
     printf "  ${G}aptclean${R}             Apt cleanup of unused packages\n"
     printf "  ${G}sysinfo${R}              Hardware system info via dmidecode\n"
     printf "  ${G}raminfo${R}              Hardware & usage RAM details\n"
     printf "  ${G}scandisk${R}             Scan directory for large or old files\n"
     printf "\n"
-    printf "${Y}6. WINDOWS UTILITIES [windows]${R}\n"
+    printf "${Y}7. WINDOWS UTILITIES [windows]${R}\n"
     printf "  ${G}explore${R}              Open directory in Windows Explorer\n"
     printf "  ${G}open${R}                 Open file or URL in default Windows app\n"
     printf "  ${G}toUnix${R}               Convert Windows path format to Unix\n"
@@ -257,6 +269,14 @@ cfginspect() {
     _run_py_script "$HOME/.local/bin/config_inspector.py" "$@"
 }
 
+diskguard() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/diskguard.py" --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/diskguard.py" "$@"
+}
+
 envmgr() {
     if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
         _run_py_script "$HOME/.local/bin/envmgr.py" --help
@@ -296,6 +316,26 @@ portwatch() {
         return 0
     fi
     _run_py_script "$HOME/.local/bin/portwatch.py" "$@"
+}
+
+# ─────────────────────────────────────────────────────────────
+# ENVIRONMENT & DATABASE MANAGEMENT UTILITIES [both]
+# ─────────────────────────────────────────────────────────────
+
+envcfg() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/envcfg.py" --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/envcfg.py" "$@"
+}
+
+dbcli() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/dbcli.py" --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/dbcli.py" "$@"
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -426,6 +466,193 @@ d() {
         return 0
     fi
     if [ -n "${__shkit_dir_stack[8]:-}" ]; then builtin cd "${__shkit_dir_stack[8]}" && pwd; else echo "Stack index 9 not set"; return 1; fi
+}
+
+dklist() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/dkutil.py" list --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/dkutil.py" list "$@"
+}
+
+dkclean() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/dkutil.py" clean --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/dkutil.py" clean "$@"
+}
+
+dklogs() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/dkutil.py" logs --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/dkutil.py" logs "$@"
+}
+
+ngstat() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/ngutil.py" stat --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/ngutil.py" stat "$@"
+}
+
+ngerr() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/ngutil.py" err --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/ngutil.py" err "$@"
+}
+
+ngconf() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/ngutil.py" conf --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/ngutil.py" conf "$@"
+}
+
+clipcopy() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: clipcopy [--huge | --bridge]"
+        echo ""
+        echo "Copy stdin content to the system clipboard."
+        echo ""
+        echo "Options:"
+        echo "  --huge, --bridge   Use local background HTTP service tunnel (requires ssh -R)"
+        return 0
+    fi
+
+    local mode="local"
+    if [ -n "${SSH_CONNECTION:-}" ] || [ -n "${SSH_CLIENT:-}" ] || [ -n "${SSH_TTY:-}" ]; then
+        mode="ssh"
+    fi
+
+    if [[ "${1:-}" == "--huge" || "${1:-}" == "--bridge" ]]; then
+        # Stream stdin to local bridge service
+        curl -sS -X POST --data-binary @- http://localhost:9999/clip
+    elif [ "$mode" = "ssh" ]; then
+        # Base64 encode and output OSC 52 sequence
+        local content
+        content=$(cat)
+        local b64
+        b64=$(printf "%s" "$content" | base64 | tr -d '\r\n')
+        printf "\033]52;c;%s\a" "$b64"
+    else
+        # Desktop copy
+        _run_py_script "$HOME/.local/bin/clip_helper.py" copy
+    fi
+}
+
+clippaste() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        echo "Usage: clippaste [--huge | --bridge]"
+        echo ""
+        echo "Output clipboard content to stdout."
+        echo ""
+        echo "Options:"
+        echo "  --huge, --bridge   Use local background HTTP service tunnel (requires ssh -R)"
+        return 0
+    fi
+
+    local mode="local"
+    if [ -n "${SSH_CONNECTION:-}" ] || [ -n "${SSH_CLIENT:-}" ] || [ -n "${SSH_TTY:-}" ]; then
+        mode="ssh"
+    fi
+
+    if [[ "${1:-}" == "--huge" || "${1:-}" == "--bridge" ]]; then
+        # Fetch from local bridge service
+        curl -sS http://localhost:9999/clip
+    elif [ "$mode" = "ssh" ]; then
+        echo "Error: clippaste over SSH requires the reverse port forward bridge. Run: clippaste --huge" >&2
+        return 1
+    else
+        # Desktop paste
+        _run_py_script "$HOME/.local/bin/clip_helper.py" paste
+    fi
+}
+
+clipservice() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" || -z "${1:-}" ]]; then
+        echo "Usage: clipservice [start | stop | status]"
+        echo ""
+        echo "Manage large-data clipboard paste background service."
+        return 0
+    fi
+
+    local action="$1"
+    local port=9999
+    local pid_file="$HOME/.config/shell-kit/clip_service.pid"
+    mkdir -p "$HOME/.config/shell-kit"
+
+    case "$action" in
+        start)
+            # Ask for consent every time the service is started
+            echo "Requesting clipboard bridge launch authorization..."
+            read -r -p "Enable background large-data clipboard service on localhost:9999? (y/N): " choice
+            case "$choice" in
+                [yY][eE][sS]|[yY])
+                    echo "Consent granted. Initializing service..."
+                    ;;
+                *)
+                    echo "Consent declined. Service will not start."
+                    return 1
+                    ;;
+            esac
+
+            # Check if port is already listening
+            if curl -s -o /dev/null http://localhost:9999/clip; then
+                echo "Clipboard service is already running on port $port."
+                return 0
+            fi
+            # Spawn service in background
+            _run_py_script "$HOME/.local/bin/clip_service.py" >/dev/null 2>&1 &
+            local pid=$!
+            echo "$pid" > "$pid_file"
+            # Wait brief moment and check
+            sleep 0.5
+            if curl -s -o /dev/null http://localhost:9999/clip; then
+                echo "Clipboard service started on http://127.0.0.1:$port (PID: $pid)"
+            else
+                echo "Failed to start clipboard service."
+                return 1
+            fi
+            ;;
+        stop)
+            if [ -f "$pid_file" ]; then
+                local pid
+                pid=$(cat "$pid_file")
+                kill "$pid" 2>/dev/null || true
+                rm -f "$pid_file"
+            fi
+            pkill -f clip_service.py 2>/dev/null || true
+            echo "Clipboard service stopped."
+            ;;
+        status)
+            if curl -s -o /dev/null http://localhost:9999/clip; then
+                echo "Clipboard service is running on port $port."
+            else
+                echo "Clipboard service is stopped."
+            fi
+            ;;
+        *)
+            echo "Unknown action: $action" >&2
+            echo "Usage: clipservice [start | stop | status]" >&2
+            return 1
+            ;;
+    esac
+}
+
+schedmgr() {
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+        _run_py_script "$HOME/.local/bin/schedmgr.py" --help
+        return 0
+    fi
+    _run_py_script "$HOME/.local/bin/schedmgr.py" "$@"
 }
 
 
